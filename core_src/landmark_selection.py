@@ -17,6 +17,9 @@ def get_best_hits(filepath: str, query_coverage: float, percent_id: float)-> Dic
 
 	return best_hits
 
+
+## [TODO:] Add Isorank here!
+
 def add_reciprocal_best_hits(source_file: str, target_file: str, query_coverage: float, percent_id: float)-> Set[Tuple[str,str]]:
 	if not file_exists(source_file, 'LANDMARK SELECTION'): exit()
 	if not file_exists(target_file, 'LANDMARK SELECTION'): exit()
