@@ -44,21 +44,20 @@ Returns:
 
 def MUNDO_predict(target_map, 
                   MUNK_map, 
-                  n_target_neighbors, 
-                  n_MUNK_neighbors,
+                  n_neighbors,
                   target_go_f,
-                  MUNK_go_f,
+                  source_go_f,
                   MUNK_weight = 0.25):
     """
     Performs prediction on the target network, 
-    target_map: map protein(target) -> [protein (source)] which is sorted protein neighbors by their similarity for the target species(lower index in the list means the protein is more similar)
+    target_map: map protein(target) -> [protein(target)] which is sorted protein neighbors by their similarity for the target species(lower index in the list means the protein is more similar)
     
     MUNK map: map protein(target) -> [protein (source)] where the protein in this case is from the source species.
     
-    n_target_neighbors, n_MUNK_neighbors -> integer values. No of neighbors for both
-    source and target.
+    n_neighbors                   -> integer values. No of neighbors for
+    source plus target. [TODO]: needs to be splitted properly by Grigorii's algorithm.
     
-    target_go_f, MUNK_go_f : both functions that takes target (or source if the function is MUNK_go_f) and returns the GO labels associated with them.
+    target_go_f, source_go_f : both functions that takes target (or source if the function is MUNK_go_f) and returns the GO labels associated with them.
     """
     def vote(target_voters, MUNK_voters):
         """
@@ -68,17 +67,27 @@ def MUNDO_predict(target_map,
         
         # Work on target 
         for v in target_voters:
-            go_labels = target_go_f[v]
+            go_labels = target_go_f(v)
             for g in go_labels:
                 go_map[g] = 1 if g not in go_map else go_map[g] + 1
         
         # Work on source
         for v in MUNK_voters:
-            go_labels = MUNK_go_f[v]
+            go_labels = source_go_f(v)
             for g in go_labels:
-                go_map[g] = MUNK_weight if g not in go_map else go_map[g] + 1
+                go_map[g] = MUNK_weight if g not in go_map else go_map[g] + MUNK_weight
         
-        return sorted(go_map.items(), reverse = True, lambda k: k[1])
+        return sorted(go_map.items(), reverse = True, lambda k: k[1]) # [(go_label, vote), ... ] format, vote is float
+    
+    def get_neigbors_split(protein):
+      """
+      [TODO:] Grigorii Fill it out.
+      """
+      # How to split the 
+      return n_target_neighbors, n_MUNK_neighbors
+    
+    # 
+    n_target_neighbors, n_MUNK_neighbors = get_neighbors_split(protein)
     
     # Get all the target proteins
     proteins       = target_map.keys()
@@ -93,7 +102,7 @@ def MUNDO_predict(target_map,
             continue
         
         target_voters = target_map[p][:n_target_neighbors]
-        MUNK_voters   = MUNK_map[p][:n_target_neighbors]
+        MUNK_voters   = MUNK_map[p][:n_MUNK_neighbors]
         
         protein_labels[p] = vote(target_voters, MUNK_voters)
     return protein_labels[p]
