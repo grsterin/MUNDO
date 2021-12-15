@@ -23,7 +23,7 @@ class GoTool:
         Returns all the GO labels satisfying the certain filter. Filter is a dictionary with terms
         {'max_level' :  int #maximum level of GO terms allowed
         'min_level'  :  int #minimum level of GO terms allowed
-        'namespace'  :  Namespace of the GO terms
+        'namespace'  :  Namespace of the GO terms, P, F or C.
         """
         if filters == None:
             return list(self.godag.keys())
@@ -73,8 +73,9 @@ def get_go_labels(filter_protein,
     
     # Use the GoTool described above, to get the filtered labels
     gt          = GoTool(obo_file)
-    labels      = gt.get_labels(filter_label)
     
+    # This is the complete list of GO Labels filtered out only based on thier depth and namespace (P, F or C)
+    labels      = gt.get_labels(filter_label)
     
     labels_dict = {}
     f_labels    = []
@@ -89,11 +90,7 @@ def get_go_labels(filter_protein,
         assoc_genes   = go2geneids[key]
         
         # `f_assoc_genes` to filter genes according to the filter_protein
-        f_assoc_genes = [] 
-        
-        for a in assoc_genes:
-            if a in entrez_labels: # Remove proteins not in the entrez labels list
-                f_assoc_genes.append(anno_map(a))
+        f_assoc_genes = list(set(assoc_genes).intersection(set(entrez_labels))) 
         
         # Removes the GO terms if it very sparsely annotates the protein list
         

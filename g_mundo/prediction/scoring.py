@@ -266,7 +266,8 @@ def score_cv_sim(test_nodes,
                  go_dag,
                  term_counts,
                  ci = 1000):
-    """Scores cross validation by counting the number of test nodes that
+    """
+    Scores cross validation by counting the number of test nodes that
     were accurately labeled after their removal from the true
     labelling.
     """
