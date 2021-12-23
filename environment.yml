@@ -1,0 +1,20 @@
+name: mundo
+
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+
+dependencies:
+  - pip=20.0
+  - python=3.7
+  - h5py
+  - matplotlib
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  - seaborn
+  - setuptools
+  - tqdm
+  - networkx
