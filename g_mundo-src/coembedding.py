@@ -25,8 +25,8 @@ def get_args():
                         default = None)
     parser.add_argument("--inprefix",
                         help ="The prefix of the input file contents",
-                        type = "str"
-                        default="")
+                        type = "str",
+                        default = "")
     parser.add_argument("--precomputedprefix", 
                        help = "If dsd files are already precomputed, this is the identifier",
                         default = None)
