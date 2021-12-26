@@ -1,10 +1,11 @@
 from typing import Tuple, Dict, List, Callable
-
+import numpy as np
 
 def get_neighbors_split(protein: str,
                         target_map: Dict[str, List[str]],
                         n_neighbors: int,
-                        target_go_f: Callable[[str], List[str]]) -> Tuple[int, int]:
+                        target_go_dict # changes made here
+                       ) -> Tuple[int, int]:
     """
     This method would allow us to use a single parameter for a number of neighbors instead of 2 parameter, which would simplify grid search.
     It also allows to independently determine number of neighbors to use in knn for each node.
@@ -22,7 +23,7 @@ def get_neighbors_split(protein: str,
         return neighbors[:n_neighbors]
 
     def is_protein_annotated(prot: str) -> bool:
-        go_annotations = target_go_f(prot)
+        go_annotations = target_go_dict[prot] if prot in target_go_dict else []
         return len(go_annotations) != 0
 
     target_closest_neighbors = get_n_closest_neighbors()
@@ -65,8 +66,8 @@ def get_weight_coefficient(networks_hubalign_score: float,
 def MUNDO_predict(target_map: Dict[str, List[str]],
                   MUNK_map: Dict[str, List[str]],
                   n_neighbors: int,
-                  target_go_f: Callable[[str], List[str]],
-                  source_go_f: Callable[[str], List[str]],
+                  target_go_dict, # change it here
+                  source_go_dict,
                   MUNK_weight: float = 0.25) -> Dict[str, List[Tuple[str, float]]]:
     """
     Performs prediction on the target network,
@@ -89,26 +90,29 @@ def MUNDO_predict(target_map: Dict[str, List[str]],
         
         # Work on target 
         for v in target_voters:
-            go_labels = target_go_f(v)
+            go_labels = target_go_dict[v] if v in target_go_dict else []
             for g in go_labels:
                 go_map[g] = 1.0 if g not in go_map else go_map[g] + 1.0
         
         # Work on source
         for v in MUNK_voters:
-            go_labels = source_go_f(v)
+            go_labels = source_go_dict[v] if v in source_go_dict else []
             for g in go_labels:
                 go_map[g] = MUNK_weight if g not in go_map else go_map[g] + MUNK_weight
 
         return sorted(go_map.items(), reverse=True, key=lambda k: k[1])  # [(go_label, vote), ... ] format, vote is float
     
     # Get all the target proteins
-    proteins = target_map.keys()
+    if type(target_map) is dict:
+        proteins = target_map.keys()
+    elif type(target_map) is np.ndarray:
+        proteins = range(target_map.shape[0])
     protein_labels = {}
     
     for p in proteins:
-        n_target_neighbors, n_MUNK_neighbors = get_neighbors_split(p, target_map, n_neighbors, target_go_f)
+        n_target_neighbors, n_MUNK_neighbors = get_neighbors_split(p, target_map, n_neighbors, target_go_dict)
 
-        label = target_go_f(p)
+        label = target_go_dict[p] if p in target_go_dict else None
         
         # Only happens if training proteins, skip them 
         if label != None:

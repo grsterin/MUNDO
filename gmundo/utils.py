@@ -1,6 +1,6 @@
 import networkx as nx
 import numpy as np
-from g_mundo.linalg import turbo_dsd
+from gmundo.linalg import turbo_dsd
 
 def compute_dsd(graph, nodelist):
     """

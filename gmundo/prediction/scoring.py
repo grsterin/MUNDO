@@ -38,16 +38,11 @@ def score_cv(test_nodes, test_labelling, real_labelling):
         
         if type(test_label) is list:
             """
-            If the test_label is a list, any label in the list belonging to the 
-            `real_labelling[node]` is a correct prediction
+            Highest confidence label
             """
-            for tl in test_label:
-                if tl in real_labelling[node]:
-                    correct += 1
-                    break
-        else:
-            if test_label in real_labelling[node]:
-                correct += 1
+            test_label = test_label[0][0]
+        if test_label in real_labelling[node]:
+            correct += 1
         total += 1
     return float(correct) / float(total)
 
