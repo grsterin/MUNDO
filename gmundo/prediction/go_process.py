@@ -76,7 +76,6 @@ def get_go_labels(filter_protein,
     
     # This is the complete list of GO Labels filtered out only based on thier depth and namespace (P, F or C)
     labels      = gt.get_labels(filter_label)
-    
     labels_dict = {}
     f_labels    = []
     
@@ -97,7 +96,7 @@ def get_go_labels(filter_protein,
         if len(f_assoc_genes) > filter_protein["lower_bound"]:
             labels_dict[key] = f_assoc_genes
             f_labels.append(key)
-        log(f"Number of GO-terms: {len(f_labels)}")
+    log(f"Number of GO-terms: {len(f_labels)}")
     return f_labels, labels_dict
 
 

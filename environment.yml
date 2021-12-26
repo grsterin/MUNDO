@@ -4,6 +4,7 @@ channels:
   - pytorch
   - conda-forge
   - defaults
+  - bioconda
 
 dependencies:
   - pip=20.0
@@ -18,3 +19,5 @@ dependencies:
   - setuptools
   - tqdm
   - networkx
+  - mygene
+  - goatools

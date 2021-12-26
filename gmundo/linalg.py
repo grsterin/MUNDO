@@ -19,7 +19,7 @@ def rkhs(H: ndarray)-> ndarray:
         """
         return np.allclose(A, A.T, rtol=rtol, atol=atol)
 
-    if not is_symmetric(A):
+    if not is_symmetric(H):
         print('[!] Cannot embed asymmetric kernel into RKHS. Closing...')
         exit()        
     eigenvalues, eigenvectors = eig(H)
@@ -40,7 +40,7 @@ def best_gamma_kernel(distance_matrix: ndarray)-> ndarray:
     return r
 
 
-def turbo_dsd(adjacency: ndarray, nRw: int):
+def turbo_dsd(adjacency: ndarray, nRw: int = -1):
     """
     Function that takes in adjacency matrix, and return the 
     resulting Turbo DSD matrix from that.
@@ -59,7 +59,7 @@ def turbo_dsd(adjacency: ndarray, nRw: int):
         return squareform(pdist(inv(np.eye(n) - p - pi.T),metric='cityblock'))
 
     
-def compute_pinverse_diagonal(diag: ndarray)-> ndarray:
+def compute_pinverse_diagonal(diag):
     """
     Compute inverse of a diagonal matrix.
     """
@@ -103,6 +103,18 @@ def compute_dsd_normalized(adj: ndarray, deg: ndarray, nrw: int= -1, lm: int= 1,
 
 
 ##### Thresholding and RBF kernel
+def compute_dsd_embedding(graph, nodelist):
+    def diagonalize(d):
+        n, _ = d.shape
+        diag = np.zeros((n, n))
+        for i in range(n):
+            diag[i, i] = d[i, 0]
+        return diag
+    
+    adj  = nx.to_numpy_matrix(graph, nodelist)
+    n, _ = adj.shape
+    deg  = diagonalize(adj @ np.ones((n, 1)))
+    return compute_dsd_normalized(adj, deg)
 
 
 def best_threshold(rbf: ndarray)-> ndarray:
@@ -123,8 +135,8 @@ def compute_rbf(A: ndarray, gamma: float=None, t: float=None)-> ndarray:
     """
     Compute the RBF kernel
     """
-    pd = pairwise_distance_matrix(A)
-    rbf = laplacian_kernel(pd, gamma) if gamma else best_gamma_kernel(pd)
+    # pd = pairwise_distance_matrix(A)
+    rbf = laplacian_kernel(A, gamma) if gamma else best_gamma_kernel(A)
     t_rbf = np.where((rbf < t) | (rbf == 1), 0, rbf) if t else best_threshold(rbf)
     clean(t_rbf)
     return t_rbf
