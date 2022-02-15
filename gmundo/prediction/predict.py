@@ -1,6 +1,9 @@
 from typing import Tuple, Dict, List
 import numpy as np
-
+from collections import defaultdict
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
 
 def get_neighbors_split(protein: int,
                         target_map: Dict[int, List[int]],
@@ -118,3 +121,123 @@ def mundo_predict(target_map: Dict[int, List[int]],
         protein_labels[p] = vote(target_voters, munk_voters)
 
     return protein_labels
+
+
+
+def perform_binary_OVA(E, labels, params = {}, clf_type="LR", confidence = True):
+    """
+    Perform binary svc on embedding and return the new labels
+    @param E: Embedding of size n x k
+    @param labels: A dictionary that maps the index in the row of embedding to labels. An index can have many labels
+    @param params:
+    @return labels: Since the dictionary labels is incomplete (some of the indices donot have any labels associated with it), this function performs SVC for each labels and completels the labels dictionary, and returns it.
+    """
+    def convert_labels_to_dict(lls):
+        """
+        This function takes in a list of labels associated with a protein embedding, and returns the dictionary that is keyed .
+        by the index of protein embedding with the value 
+        """
+        l_dct = {}
+        for k in lls:
+            ll       = lls[k]
+            l_dct[k] = {i: True for i in ll}
+        return l_dct
+
+    labels_dct = convert_labels_to_dict(labels)
+    
+    def transpose_labels(labels):
+        """
+        Returns a dict with go labels as keys with values being a list of 
+        proteins with that label
+        """
+        transpose = {}
+        for protein in labels:
+            lls = labels[protein]
+            for ll in lls:
+                if not ll in transpose:
+                    transpose[ll] = []
+                transpose[ll].append(protein)
+        return transpose
+
+    preprocess = False
+    if "preprocess" in params:
+        from sklearn.pipeline import make_pipeline
+        preprocess = params["preprocess"]
+        print(f"Preprocess set to {preprocess}")
+    # perform a filter on the label classes we are going to use
+    t_labels                     = transpose_labels(labels)
+    print(f"The number of All the Labels {len(t_labels)}")
+
+    """
+    #[used_labels, unused_labels] = jaccard_filter(t_labels, 0.1)
+    [used_labels, assoc_dict]   = jaccard_filter_added_unused(t_labels, threshold=thres)
+    print(f"The number of Used Labels {len(used_labels)}")
+    """
+
+    samples    = {}
+    n          = E.shape[0]
+
+    # Adding Positive samples
+    for i in labels:
+        lls = labels[i]
+        for ll in lls:
+            """
+            # ignore the labels that we aren't considering
+            if ll not in used_labels:
+                continue
+            """
+            if ll not in samples:
+                samples[ll] = {"positive" : [], "negative" : [], "null" : [], "clf": None}
+                if clf_type != "LR":
+                    samples[ll]["clf"] = (SVC(gamma = "auto", probability=True, max_iter = 10000) 
+                                          if not preprocess else
+                                          make_pipeline(StandardScaler(), SVC(probability = True)))
+                else:
+                    samples[ll]["clf"] = LogisticRegression(random_state = 0)
+            samples[ll]["positive"].append(i)
+
+    # Adding Negative samples and creating null set (unlabeled data)
+    null_set = []
+    for i in range(n):
+        if i not in labels:
+            null_set.append(i)
+        else:
+            for j in samples:
+                if j not in labels_dct[i]:
+                    samples[j]["negative"].append(i)
+    null_set = np.array(null_set)
+
+    # Balance negative and positive samples
+    # and train the probabilistic SVMs
+    for s in samples:
+        n_pos = len(samples[s]["positive"])
+        n_neg = len(samples[s]["negative"])
+        n_val = n_pos if n_pos < n_neg else n_neg
+        samples[s]["positive"] = np.array(samples[s]["positive"][:n_val])
+        samples[s]["negative"] = np.array(samples[s]["negative"][:n_val])
+        lbls                   = np.zeros((2 * n_val, ))
+        lbls[:n_pos]           = 1
+        inputs                 = np.concatenate([samples[s]["positive"],
+                                                 samples[s]["negative"]])
+        samples[s]["clf"].fit(E[inputs], lbls)
+    
+    # iterate over the classes computing the probability for each point in
+    # the null set for each class
+    probabilities = np.zeros(( len(null_set), len(samples) ))
+    sample_keys = list(samples.keys())
+    for i, s in enumerate(sample_keys):
+        # predict_proba returns a matrix, each row is the prediction for a datapoint
+        # and each column is for a different class. col 0 is negative, col 1 is positive
+        probabilities[:,i] = samples[s]["clf"].predict_proba(E[null_set])[:,1]
+
+
+    for i in range(len(null_set)):
+        prbs = probabilities[i]
+        e_id = null_set[i]
+        if confidence:
+            labels[e_id] = [(s, p) for s, p in zip(sample_keys, prbs)]
+        else:
+            prb_id = np.argmax(prbs)
+            labels[e_id] = sample_keys[prb_id]
+    return labels
+
