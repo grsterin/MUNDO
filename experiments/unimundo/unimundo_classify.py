@@ -7,7 +7,8 @@ import pandas as pd
 import numpy as np
 import json
 
-def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors = 20, MUNK_weight = 0.25):
+
+def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, MUNK_weight = 0.25):
     def predictor(target_prot_go):
         return mundo_predict(target_neighbors,
                              munk_neighbors,
@@ -17,12 +18,14 @@ def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, 
                              MUNK_weight)
     return predictor
 
+
 def convert_to_dict(npy_neighbors):
     ndict = {}
-    n, _  = npy_neighbors.shape
+    n, _ = npy_neighbors.shape
     for i in range(n):
         ndict[i] = npy_neighbors[i, :]
     return ndict
+
 
 """
 We are assuming the networks are always represented using the ENTREZ protein ids, which are essentially integers.
@@ -140,6 +143,3 @@ def main(args):
     
 if __name__ == "__main__":
     main(parse_args())
-    
-                          
-                                              
