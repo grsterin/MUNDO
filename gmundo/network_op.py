@@ -1,4 +1,5 @@
 import networkx as nx
+import pandas as pd
 
 
 def read_network_from_biogrid_file(db_file: str, organism_name: str) -> nx.Graph:
@@ -23,3 +24,8 @@ def read_network_from_biogrid_file(db_file: str, organism_name: str) -> nx.Graph
 
     # return largest connected component
     return G.subgraph(max(nx.connected_components(G), key=len))
+
+
+def read_network_from_tsv(tsv_file: str) -> nx.Graph:
+    df_network = pd.read_csv(tsv_file, sep="\t", header=None)
+    return nx.from_pandas_edgelist(df_network, 0, 1)
