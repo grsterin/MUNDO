@@ -33,7 +33,7 @@ def parse_args():
     parser.add_argument("--go_type", default = "F", choices = ["P", "F", "C"])
     parser.add_argument("--min_level", default = 5, type = int)
     parser.add_argument("--min_prot", default = 50, type = int)
-    parser.add_argument("--org_id", type = int)
+    parser.add_argument("--org_id", type = int, help = "Organism ID")
     parser.add_argument("--verbose", action = "store_true", default = False)
     return parser.parse_args()
 
