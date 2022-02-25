@@ -1,3 +1,7 @@
+#!/cluster/tufts/cowenlab/.envs/denoise/bin/python
+import os
+import sys
+sys.path.append(os.getcwd()) 
 import numpy as np
 import argparse 
 from gmundo.linalg import compute_dsd_embedding
