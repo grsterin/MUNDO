@@ -1,3 +1,7 @@
+#!/cluster/tufts/cowenlab/.envs/denoise/bin/python
+import os
+import sys
+sys.path.append(os.getcwd()) 
 from n2vec_utils import compute_embedding
 import pandas as pd
 import numpy as np
