@@ -1,3 +1,7 @@
+#!/cluster/tufts/cowenlab/.envs/denoise/bin/python
+import os
+import sys
+sys.path.append(os.getcwd())
 '''
 Reference implementation of node2vec. 
 Author: Aditya Grover
@@ -6,14 +10,12 @@ node2vec: Scalable Feature Learning for Networks
 Aditya Grover and Jure Leskovec 
 Knowledge Discovery and Data Mining (KDD), 2016
 '''
-
 import argparse
 import numpy as np
 import networkx as nx
 import node2vec as nv
 from gensim.models import Word2Vec
 from datetime import datetime
-import os
 from gmundo.prediction.go_process import get_go_labels
 import pandas as pd
 
