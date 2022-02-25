@@ -1,3 +1,4 @@
+#!/cluster/tufts/cowenlab/.envs/denoise/bin/python
 from mashup_utils import generate_As, compute_mashup
 import argparse
 import numpy as np
