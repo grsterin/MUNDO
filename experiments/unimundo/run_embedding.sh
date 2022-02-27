@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SBATCH_OPTS="\
---mem=64GB \
+--mem=128GB \
 --partition=preempt \
 --mail-type=END --mail-user=Kapil.Devkota@tufts.edu \
 --time=1-10:00:00 \
