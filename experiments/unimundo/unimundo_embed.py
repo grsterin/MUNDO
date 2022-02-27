@@ -111,8 +111,8 @@ def main(args):
             
     ###################################### COMPUTING LAPLACIAN ######################################################
     
-    source_lap_name  = f"{source_base_name}.dsd.rbf_{args.gamma}.npy"
-    target_lap_name  = f"{target_base_name}.dsd.rbf_{args.gamma}.npy"
+    source_lap_name  = f"{source_base_name}.dsd.rbf_{args.laplacian_param}.npy"
+    target_lap_name  = f"{target_base_name}.dsd.rbf_{args.laplacian_param}.npy"
 
     if (os.path.exists(source_lap_name) and os.path.exists(target_lap_name)):
         log("Laplacian files already exists! Loading...")
