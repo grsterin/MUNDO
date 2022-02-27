@@ -24,4 +24,4 @@ done
 WORKING_FOLDER=/cluster/tufts/cowenlab/Projects/UNIMUNDO/MUNDO/training_dir
 OUTPUT=$WORKING_FOLDER/network_logs/${NETWORK}_${DIM}_UMUNDO.log
 
-sbatch $SBATCH_OPTS -o ${OUTPUT} ./unimundo_embed.py --working_folder=${WORKING_FOLDER} --biogrid_tsv_folder=${WORKING_FOLDER} --source_organism_name=${SOURCE} --target_organism_name=${TARGET} --mapping=$MAPPING} --mapping_num_of_pairs=${DIM} --construct_dsd --construct_dsd_dist --construct_kernel --save_munk_matrix --verbose
+sbatch $SBATCH_OPTS -o ${OUTPUT} ./unimundo_embed.py --working_folder=${WORKING_FOLDER} --biogrid_tsv_folder=${WORKING_FOLDER} --source_organism_name=${SOURCE} --target_organism_name=${TARGET} --mapping=${MAPPING} --mapping_num_of_pairs=${DIM} --construct_dsd --construct_dsd_dist --construct_kernel --save_munk_matrix --verbose
