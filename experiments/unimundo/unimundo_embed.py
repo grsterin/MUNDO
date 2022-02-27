@@ -65,36 +65,81 @@ def main(args):
     with open(f"{target_base_name}.dsd.json", "w") as jf:
         json.dump(tar_map, jf)
 
-    log("Computing source and target DSD embeddings")
-    src_dsd = compute_dsd_embedding(g_source, src_nodelist)
-    tar_dsd = compute_dsd_embedding(g_target, tar_nodelist)
-    
-    if args.construct_dsd:
-        np.save(f"{source_base_name}.dsd.npy", src_dsd)
-        np.save(f"{target_base_name}.dsd.npy", tar_dsd)
+    ###################################### COMPUTING DSD #####################################################3
 
-    log("Converting source and target DSD matrices to square form pairwise distance matrices")
-    src_ddist = squareform(pdist(src_dsd))
-    tar_ddist = squareform(pdist(tar_dsd))
+    source_dsd_name = f"{source_base_name}.dsd.npy"
+    target_dsd_name = f"{target_base_name}.dsd.npy"
     
-    if args.construct_dsd_dist:
-        np.save(f"{source_base_name}.dsd.dist.npy", src_ddist)
-        np.save(f"{target_base_name}.dsd.dist.npy", tar_ddist)
+    if (os.path.exists(source_dsd_name)):
+        log("Source dsd file already exists! Loading...")
+        src_dsd = np.load(source_dsd_name)
+    else:
+        log("Computing source DSD embedding")
+        src_dsd = compute_dsd_embedding(g_source, src_nodelist)
+        if args.construct_dsd:
+            log("\tSaving...")
+            np.save(source_dsd_name, src_dsd)
+    if (os.path.exists(target_dsd_name)):
+        log("Target dsd file already exists! Loading...")
+        tar_dsd = np.load(target_dsd_name)
+    else:
+        log("Computing target DSD embedding")
+        tar_dsd = compute_dsd_embedding(g_target, tar_nodelist)
+        if args.construct_dsd:
+            log("\tSaving...")
+            np.save(target_dsd_name, tar_dsd)
 
-    log("Computing source and target laplacian kernel")
-    src_ker = laplacian_kernel(src_ddist, gamma=args.laplacian_param)
-    tar_ker = laplacian_kernel(tar_ddist, gamma=args.laplacian_param)
+            
+    ###################################### COMPUTING DSD DIST ####################################################3#
     
-    if args.construct_kernel:
-        np.save(f"{source_base_name}.dsd.rbf_{args.laplacian_param}.npy", src_ker)
-        np.save(f"{target_base_name}.dsd.rbf_{args.laplacian_param}.npy", tar_ker)
+    source_dist_name = f"{source_base_name}.dsd.dist.npy"
+    target_dist_name = f"{target_base_name}.dsd.dist.npy"
 
-    log("Computing MUNK coembedding")
-    mapping = read_mapping(f"{args.working_folder}/{args.mapping}.tsv", args.mapping_num_of_pairs, src_map, tar_map, separator="\t")
-    munk_mat = coembed_networks(src_ker, tar_ker, mapping, verbose=True)
+    if (os.path.exists(source_dist_name) and os.path.exists(target_dist_name)):
+        log("Dist files already exists! Loading...")
+        src_ddist    = np.load(source_dist_name)
+        tar_ddist    = np.load(target_dist_name)
+    else:
+        log("Converting source and target DSD matrices to square form pairwise distance matrices")
+        src_ddist = squareform(pdist(src_dsd))
+        tar_ddist = squareform(pdist(tar_dsd))
+        if args.construct_dsd_dist:
+            log(f"\tSaving...")
+            np.save(source_dist_name, src_ddist)
+            np.save(target_dist_name, tar_ddist)
+
+            
+    ###################################### COMPUTING LAPLACIAN ######################################################
     
-    if args.construct_coembed:
-        np.save(f"{args.working_folder}/{args.mapping}_lap_ker_{args.laplacian_param}.munk.npy", munk_mat)
+    source_lap_name  = f"{source_base_name}.dsd.rbf_{args.gamma}.npy"
+    target_lap_name  = f"{target_base_name}.dsd.rbf_{args.gamma}.npy"
+
+    if (os.path.exists(source_lap_name) and os.path.exists(target_lap_name)):
+        log("Laplacian files already exists! Loading...")
+        src_ddist    = np.load(source_lap_name)
+        tar_ddist    = np.load(target_lap_name)
+    else:
+        log("Computing source and target laplacian kernel")
+        src_ker = laplacian_kernel(src_ddist, gamma=args.laplacian_param)
+        tar_ker = laplacian_kernel(tar_ddist, gamma=args.laplacian_param)
+        if args.construct_kernel:
+            log(f"\tSaving...")
+            np.save(source_lap_name, src_ker)
+            np.save(target_lap_name, tar_ker)
+    
+
+    ############################# COMPUTING MUNK ##############################################
+    munk_folder = f"{args.working_folder}/{args.mapping}_lap_ker_{args.laplacian_param}.munk.npy"
+    if os.path.exists(munk_folder):
+        print(f"MUNK matrix already computed! Ending...")
+    else:
+        log("Computing MUNK coembedding")
+        mapping = read_mapping(f"{args.working_folder}/{args.mapping}.tsv", args.mapping_num_of_pairs, src_map, tar_map, separator="\t")
+        munk_mat = coembed_networks(src_ker, tar_ker, mapping, verbose=True)
+    
+        if args.construct_coembed:
+            log(f"\t Saving...")
+            np.save(munk_folder, munk_mat)
 
 
 if __name__ == "__main__":
