@@ -116,8 +116,8 @@ def main(args):
 
     if (os.path.exists(source_lap_name) and os.path.exists(target_lap_name)):
         log("Laplacian files already exists! Loading...")
-        src_ddist    = np.load(source_lap_name)
-        tar_ddist    = np.load(target_lap_name)
+        src_ker    = np.load(source_lap_name)
+        tar_ker    = np.load(target_lap_name)
     else:
         log("Computing source and target laplacian kernel")
         src_ker = laplacian_kernel(src_ddist, gamma=args.laplacian_param)
