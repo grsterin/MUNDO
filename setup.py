@@ -7,7 +7,7 @@ setup(
     author='Grigorii Sterin and Kapil Devkota',
     author_email='grigorii.sterin@tufts.edu',
     url='https://github.com/grsterin/MUNDO.git',
-    packages=find_packages(where="./gmundo"),
+    packages=find_packages(exclude=["gmundo_src", "data", "core_src", "notebooks", "homology_src"]),
     # packages=find_packages(exclude=('data', 'docs', 'results', 'data')),
     # packages = ['gmundo', 'gmundo.prediction'],
     package_dir={'gmundo':'gmundo'}
