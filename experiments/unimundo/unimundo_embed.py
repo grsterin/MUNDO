@@ -86,8 +86,8 @@ def main(args):
     tar_ker = laplacian_kernel(tar_ddist, gamma=args.laplacian_param)
     
     if args.construct_kernel:
-        np.save(f"{source_base_name}.dsd.rbf_{args.gamma}.npy", src_ker)
-        np.save(f"{target_base_name}.dsd.rbf_{args.gamma}.npy", tar_ker)
+        np.save(f"{source_base_name}.dsd.rbf_{args.laplacian_param}.npy", src_ker)
+        np.save(f"{target_base_name}.dsd.rbf_{args.laplacian_param}.npy", tar_ker)
 
     log("Computing MUNK coembedding")
     mapping = read_mapping(f"{args.working_folder}/{args.mapping}.tsv", args.mapping_num_of_pairs, src_map, tar_map, separator="\t")
