@@ -30,6 +30,11 @@ def parse_args():
     parser.add_argument("--verbose", action="store_true")
     return parser.parse_args()
 
+def check_all_files(files):
+    for f in files:
+        if not os.path.exists(f):
+            print(f"File {f} not found, exiting!")
+            sys.exit(1)
 
 def main(args):
 
@@ -37,6 +42,10 @@ def main(args):
         if args.verbose:
             print(strng)
 
+    check_all_files([f"{args.biogrid_tsv_folder}/{args.source_organism_name}.tsv",
+                     f"{args.biogrid_tsv_folder}/{args.target_organism_name}.tsv",
+                     f"{args.working_folder}/{args.mapping}.tsv"])
+                    
     log("Reading networks from BIOGRID files")
     g_source = read_network_from_tsv(f"{args.biogrid_tsv_folder}/{args.source_organism_name}.tsv")
     g_target = read_network_from_tsv(f"{args.biogrid_tsv_folder}/{args.target_organism_name}.tsv")
