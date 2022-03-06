@@ -92,10 +92,15 @@ def get_go_labels(filter_protein,
         f_assoc_genes = list(set(assoc_genes).intersection(set(entrez_labels))) 
         
         # Removes the GO terms if it very sparsely annotates the protein list
+        if not ("lower_bound" in filter_protein and len(f_assoc_genes) > filter_protein["lower_bound"]):
+            continue
+
+        # This is used for UNIMUNDO
+        if not("target_gos" in filter_protein and key in filter_protein["target_gos"]):
+            continue
         
-        if len(f_assoc_genes) > filter_protein["lower_bound"]:
-            labels_dict[key] = f_assoc_genes
-            f_labels.append(key)
+        label_dict[key] = f_assoc_genes
+        f_labels.append(key)
     log(f"Number of GO-terms: {len(f_labels)}")
     return f_labels, labels_dict
 

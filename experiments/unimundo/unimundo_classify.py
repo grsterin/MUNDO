@@ -1,5 +1,5 @@
 import argparse
-from unimundo_utils import read_network_file, get_go_lab, get_prot_go_dict
+from unimundo_utils import read_network_file, get_go_lab, get_prot_go_dict, get_go_lab_src
 import os
 from gmundo.prediction.scoring import kfoldcv, kfoldcv_with_pr
 from gmundo.prediction.predict import mundo_predict
@@ -39,9 +39,7 @@ def parse_args():
     parser.add_argument("--network_target", help = "The name of the target network, which is inside the output folder as well: same naming convention as --network_source")
     parser.add_argument("--munk_name", help = "The name of the Munk coembedding network, without extension")
     parser.add_argument("--go_type", default = "F", choices = ["P", "F", "C"])
-    parser.add_argument("--min_level_src", default = 5, type = int)
     parser.add_argument("--min_level_tar", default = 5, type = int)
-    parser.add_argument("--min_prot_src", default = 50, type = int)
     parser.add_argument("--min_prot_tar", default = 50, type = int)
     parser.add_argument("--src_org_id", type = int)
     parser.add_argument("--tar_org_id", type = int)
@@ -92,20 +90,27 @@ def main(args):
     
     src_nlist = [int(r_src_dsd_map[i]) for i in range(len(r_src_dsd_map))]
     tar_nlist = [int(r_tar_dsd_map[i]) for i in range(len(r_tar_dsd_map))]
-    
+
+    """
     src_labels, src_go_prots_dict = get_go_lab(args.go_type, 
                                                args.min_level_src, 
                                                args.min_prot_src,
                                                args.src_org_id,
                                                args.go_folder,
                                                src_nlist)
-    
+    """
     tar_labels, tar_go_prots_dict = get_go_lab(args.go_type, 
                                                args.min_level_src, 
                                                args.min_prot_src, 
                                                args.tar_org_id,
                                                args.go_folder,
                                                tar_nlist)
+
+    src_labels, src_go_prots_dict = get_go_lab_src(args.go_type, 
+                                               args.src_org_id,
+                                               args.go_folder,
+                                               set(tar_labels),
+                                               src_nlist)
     
     src_prot_go = get_prot_go_dict(src_go_prots_dict, src_dsd_map)
     tar_prot_go = get_prot_go_dict(tar_go_prots_dict, tar_dsd_map)
