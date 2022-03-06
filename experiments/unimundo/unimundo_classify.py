@@ -8,14 +8,14 @@ import numpy as np
 import json
 
 
-def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, MUNK_weight = 0.25):
+def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, alpha = 0.25):
     def predictor(target_prot_go):
         return mundo_predict(target_neighbors,
                              munk_neighbors,
                              n_neighbors,
                              target_prot_go,
                              source_prot_go,
-                             MUNK_weight)
+                             alpha)
     return predictor
 
 
@@ -46,6 +46,7 @@ def parse_args():
     parser.add_argument("--n_neighbors", type = int, default = 20)
     parser.add_argument("--rbf_smoothing", default = "0.1")
     parser.add_argument("--verbose", action = "store_true", default = False)
+    parser.add_argument("--alpha", default = 0.25, type = float)
     return parser.parse_args()
 
 
@@ -88,9 +89,9 @@ def main(args):
     r_src_dsd_map = {val:key for key, val in src_dsd_map.items()}
     r_tar_dsd_map = {val:key for key, val in tar_dsd_map.items()}
     
-    src_nlist = [int(r_src_dsd_map[i]) for i in range(len(r_src_dsd_map))]
-    tar_nlist = [int(r_tar_dsd_map[i]) for i in range(len(r_tar_dsd_map))]
-
+    src_nlist = [int(r_src_dsd_map[i]) for i in range(len(r_src_dsd_map)) if r_src_dsd_map[i].isnumeric()]
+    tar_nlist = [int(r_tar_dsd_map[i]) for i in range(len(r_tar_dsd_map)) if r_tar_dsd_map[i].isnumeric()]
+    
     """
     src_labels, src_go_prots_dict = get_go_lab(args.go_type, 
                                                args.min_level_src, 
@@ -99,9 +100,10 @@ def main(args):
                                                args.go_folder,
                                                src_nlist)
     """
+    
     tar_labels, tar_go_prots_dict = get_go_lab(args.go_type, 
-                                               args.min_level_src, 
-                                               args.min_prot_src, 
+                                               args.min_level_tar, 
+                                               args.min_prot_tar, 
                                                args.tar_org_id,
                                                args.go_folder,
                                                tar_nlist)
@@ -129,7 +131,8 @@ def main(args):
               tar_prot_go,
               construct_predictor_mundo(tar_neigh_dict,
                                         munk_neigh_dict,
-                                       src_prot_go)
+                                        src_prot_go,
+                                        alpha = args.alpha)
               )
     log(f"Accuracies: mean= {np.average(accs)}, std= {np.std(accs)}")
     results["acc"] = accs
@@ -138,13 +141,14 @@ def main(args):
               tar_prot_go,
               construct_predictor_mundo(tar_neigh_dict,
                                         munk_neigh_dict,
-                                       src_prot_go)
+                                        src_prot_go,
+                                        alpha = args.alpha)
               )
     log(f"F1max: mean= {np.average(f1)}, std= {np.std(f1)}")
     results["f1"] = f1
     
     res = pd.DataFrame(results)
-    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}.tsv", sep = "\t")
+    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}_alpha_{args.alpha}.tsv", sep = "\t")
     
 if __name__ == "__main__":
     main(parse_args())

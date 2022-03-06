@@ -1,3 +1,4 @@
+import numpy as np
 from gmundo.prediction.go_process import get_go_labels
 import networkx as nx
 import pandas as pd
@@ -47,12 +48,16 @@ def get_prot_go_dict(go_prot_dict, entrez_id_map):
 
 
 def read_network_file(network):
-    net = nx.read_weighted_edgelist(network)
+    net = nx.read_weighted_edgelist(network, nodetype = str)
     return net
 
 
 def read_mapping(map_file, number_of_pairs, src_map, tar_map, separator):
     df = pd.read_csv(map_file, sep=separator, nrows=number_of_pairs, header = None)
     df[[0, 1]] = df[[0, 1]].astype(str)
+    print(tar_map)
+    out_map = [1 if k in tar_map else 0 for k in df[0]]
+    print(np.sum(out_map))
     df = df.replace({0: tar_map, 1: src_map})
+    print(df)
     return df[[1, 0]].values.tolist()

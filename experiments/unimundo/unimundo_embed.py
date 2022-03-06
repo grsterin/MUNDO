@@ -50,20 +50,37 @@ def main(args):
     g_source = read_network_from_tsv(f"{args.biogrid_tsv_folder}/{args.source_organism_name}.tsv")
     g_target = read_network_from_tsv(f"{args.biogrid_tsv_folder}/{args.target_organism_name}.tsv")
 
-    src_nodelist = list(g_source.nodes())
-    tar_nodelist = list(g_target.nodes())
-
-    src_map = {val: i for i, val in enumerate(src_nodelist)}
-    tar_map = {val: i for i, val in enumerate(tar_nodelist)}
-
+    
     source_base_name = f"{args.working_folder}/{args.source_organism_name}"
     target_base_name = f"{args.working_folder}/{args.target_organism_name}"
 
-    with open(f"{source_base_name}.dsd.json", "w") as jf:
-        json.dump(src_map, jf)
     
-    with open(f"{target_base_name}.dsd.json", "w") as jf:
-        json.dump(tar_map, jf)
+    source_json = f"{source_base_name}.dsd.json"
+    target_json = f"{target_base_name}.dsd.json"
+
+    src_map     = None
+    tar_map     = None
+    if (os.path.exists(source_json) and os.path.exists(target_json)):
+        with open(source_json, "r") as jf:
+            src_map   = json.load(jf)
+            r_src_map = {v:k for k, v in src_map.items()} 
+        with open(target_json, "r") as jf:
+            tar_map = json.load(jf)
+            r_tar_map = {v:k for k, v in tar_map.items()}
+        src_nodelist = [r_src_map[i] for i in range(len(r_src_map))]
+        tar_nodelist = [r_tar_map[i] for i in range(len(r_tar_map))]
+    else:
+        src_nodelist = list(g_source.nodes())
+        tar_nodelist = list(g_target.nodes())
+
+        src_map = {val: i for i, val in enumerate(src_nodelist)}
+        tar_map = {val: i for i, val in enumerate(tar_nodelist)}
+
+        with open(source_json, "w") as jf:
+            json.dump(src_map, jf)
+    
+        with open(target_json, "w") as jf:
+            json.dump(tar_map, jf)
 
     ###################################### COMPUTING DSD #####################################################3
 
@@ -137,7 +154,7 @@ def main(args):
         mapping = read_mapping(f"{args.working_folder}/{args.mapping}.tsv", args.mapping_num_of_pairs, src_map, tar_map, separator=" ")
         munk_mat = coembed_networks(src_ker, tar_ker, mapping, verbose=True)
     
-        if args.construct_coembed:
+        if args.save_munk_matrix:
             log(f"\t Saving...")
             np.save(munk_folder, munk_mat)
 
