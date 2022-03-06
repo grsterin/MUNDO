@@ -49,7 +49,6 @@ def main(args):
     log("Reading networks from BIOGRID files")
     g_source = read_network_from_tsv(f"{args.biogrid_tsv_folder}/{args.source_organism_name}.tsv")
     g_target = read_network_from_tsv(f"{args.biogrid_tsv_folder}/{args.target_organism_name}.tsv")
-
     
     source_base_name = f"{args.working_folder}/{args.source_organism_name}"
     target_base_name = f"{args.working_folder}/{args.target_organism_name}"
