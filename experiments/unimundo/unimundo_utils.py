@@ -18,6 +18,22 @@ def get_go_lab(go_type, min_level, min_prot, org_id, go_folder, entrez_proteins)
                                      verbose=True)
     return labels, go_prots
 
+def get_go_lab_src(go_type, org_id, go_folder, target_gos, entrez_proteins):
+    GOT = "biological_process" if go_type == "P" else "molecular_function"
+    GOT = "cellular_component" if go_type == "C" else GOT
+    
+    filter_label = {"namespace": GOT, "min_level":0}
+    filter_prot  = {"namespace": GOT, "target_gos": target_gos}
+    labels, go_prots = get_go_labels(filter_prot, 
+                                     filter_label, 
+                                     entrez_proteins, 
+                                     f"{go_folder}/gene2go", 
+                                     f"{go_folder}/go-basic.obo", 
+                                     org_id, 
+                                     verbose=True)
+    return labels, go_prots
+
+
 
 def get_prot_go_dict(go_prot_dict, entrez_id_map):
     prot_go = {}
