@@ -40,7 +40,10 @@ def score_cv(test_nodes, test_labelling, real_labelling):
             """
             Highest confidence label
             """
-            test_label = test_label[0][0]
+            try:
+                test_label = test_label[0][0]
+            except:
+                test_label = None
         if test_label in real_labelling[node]:
             correct += 1
         total += 1
