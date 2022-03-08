@@ -116,7 +116,7 @@ def mundo_predict(target_map: Dict[int, List[int]],
         n_target_neighbors, n_munk_neighbors = get_neighbors_split(p, target_map, n_neighbors, target_go_dict)
 
         target_voters = target_map[p][:n_target_neighbors]
-        munk_voters = munk_map[p][:n_munk_neighbors]
+        munk_voters = munk_map[p][:n_munk_neighbors] if munk_weight != 0.0 else []
         
         protein_labels[p] = vote(target_voters, munk_voters)
 
