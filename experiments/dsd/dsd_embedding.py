@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import numpy as np
+import json
 from gmundo.network_op import read_network_from_tsv
 from gmundo.linalg import compute_dsd_embedding, squareform, pdist, laplacian_kernel
 
@@ -30,7 +31,9 @@ def main(args):
     dsd_name = f"{base_name}.dsd.npy"
     g_network = read_network_from_tsv(f"{base_name}.tsv")
 
-    if os.path.exists(dsd_name):
+    json_file = f"{base_name}.dsd.json"
+
+    if os.path.exists(dsd_name) and os.path.exists(json_file):
         log("DSD file already exists! Loading...")
         dsd_matrix = np.load(dsd_name)
     else:
@@ -39,6 +42,11 @@ def main(args):
         if args.save_dsd:
             log("\tSaving...")
             np.save(dsd_name, dsd_matrix)
+
+        nodelist = list(g_network.nodes())
+        node_map = {val: i for i, val in enumerate(nodelist)}
+        with open(json_file, "w") as jf:
+            json.dump(node_map, jf)
 
     ###################################### COMPUTING DSD DIST ####################################################3#
 
