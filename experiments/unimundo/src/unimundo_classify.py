@@ -1,4 +1,7 @@
 import argparse
+import sys
+sys.path.append(os.getcwd()) 
+sys.path.append(f"{os.getcwd()}/src")
 from unimundo_utils import read_network_file, get_go_lab, get_prot_go_dict, get_go_lab_src
 import os
 from gmundo.prediction.scoring import kfoldcv, kfoldcv_with_pr
