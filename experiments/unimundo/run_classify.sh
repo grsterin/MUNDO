@@ -15,11 +15,11 @@ OP_BASE=output_dir
 SOURCE=bakers_yeast_biogrid
 DEST=fission_yeast_biogrid
 SOURCE_ID=559292
-TARGET_ID=4896
-NEIGHBORS=(5 10 15 20 25 30 35)
+DEST_ID=4896
+NEIGHBORS=(10 15 20 25 30 35)
 ALPHA=(0 0.05 0.1 0.2 0.4 0.6 0.8 1)
 GO=(P F C)
-while getopts "s:d:S:D:n:a:g:m:T:" args; do
+while getopts "s:d:S:D:n:a:g:m:T" args; do
     case $args in
 	s) SOURCE=${OPTARG}
 	   ;;
@@ -27,7 +27,7 @@ while getopts "s:d:S:D:n:a:g:m:T:" args; do
 	   ;;
 	S) SOURCE_ID=${OPTARG}
 	   ;;
-	D) TARGET_ID=${OPTARG}
+	D) DEST_ID=${OPTARG}
 	   ;;
 	n) NEIGHBORS=(${OPTARG})
 	   ;;
@@ -41,13 +41,14 @@ while getopts "s:d:S:D:n:a:g:m:T:" args; do
     esac
 done
 
+echo "UNIMUNDO Parameters: "
+echo "    SOURCE=${SOURCE}, DEST=${DEST}"
+
 OUTPUT_FOLDER=${OP_BASE}/${SOURCE}-${DEST}
 OUTPUT_LOGS=${OP_BASE}/logs
 
-if [ ! -d ${OUTPUT_LOGS} ]
-then
-    mkdir ${OUTPUT_LOGS}
-fi
+if [ ! -d ${OUTPUT_LOGS} ]; then mkdir ${OUTPUT_LOGS}; fi
+if [ ! -d ${OUTPUT_FOLDER} ]; then mkdir ${OUTPUT_FOLDER}; fi
 
 if [ -z $MUNK ]; then echo "MUNK embedding not specified; exiting..."; exit 1; fi
 
@@ -55,10 +56,10 @@ for G in ${GO[@]}
 do
     for A in ${ALPHA[@]}
     do
-	for N in ${NEIGHBORS}
+	for N in ${NEIGHBORS[@]}
 	do
-	    OUTPUT_LOG_FILE=${OUTPUT_LOGS}/${SOURCE}-${TARGET}-GO-${G}-ALPHA-${A}-NEIGHBORS-${N}.log
-	    sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./src/unimundo_classify.py --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --network_source=${SOURCE} --network_target=${TARGET} --munk_name=${MUNK} --go_type=${G} --src_org_id=${SOURCE_ID} --tar_org_id=${TARGET_ID} --n_neighbors=${N} --verbose --alpha=${A}
+	    OUTPUT_LOG_FILE=${OUTPUT_LOGS}/${SOURCE}-${DEST}-GO-${G}-ALPHA-${A}-NEIGHBORS-${N}.log
+	    sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./src/unimundo_classify.py --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --network_source=${SOURCE} --network_target=${DEST} --munk_name=${MUNK} --go_type=${G} --src_org_id=${SOURCE_ID} --tar_org_id=${DEST_ID} --n_neighbors=${N} --verbose --alpha=${A}
 	    if [ ! -z $TEST ]; then echo "Testing complete..."; exit 0; fi
 	done
     done
