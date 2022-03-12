@@ -30,7 +30,6 @@ def convert_to_dict(npy_neighbors):
         ndict[i] = npy_neighbors[i, :]
     return ndict
 
-
 """
 We are assuming the networks are always represented using the ENTREZ protein ids, which are essentially integers.
 """
@@ -90,7 +89,7 @@ def main(args):
     f1 = kfoldcv_with_pr(5,
                          tar_prot_go,
                          construct_predictor_dsd(tar_neigh_dict, n_neighbors=args.n_neighbors)
-                         )
+                        )
     log(f"F1max: mean= {np.average(f1)}, std= {np.std(f1)}")
     results["f1"] = f1
     

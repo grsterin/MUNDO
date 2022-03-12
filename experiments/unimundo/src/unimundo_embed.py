@@ -112,9 +112,9 @@ def main(args):
             log("\tSaving...")
             np.save(target_dsd_name, tar_dsd)
 
-    """        
-    ###################################### COMPUTING DSD DIST ####################################################3#
-    
+
+    """
+    ###################################### COMPUTING DSD DIST ####################################################3#     
     source_dist_name = f"{source_base_name}.dsd.dist.npy"
     target_dist_name = f"{target_base_name}.dsd.dist.npy"
 
@@ -132,7 +132,7 @@ def main(args):
             np.save(target_dist_name, tar_ddist)
     """        
     ###################################### COMPUTING LAPLACIAN ######################################################
-    
+
     source_lap_name  = f"{source_base_name}.dsd.rbf_{args.laplacian_param}.npy"
     target_lap_name  = f"{target_base_name}.dsd.rbf_{args.laplacian_param}.npy"
 
