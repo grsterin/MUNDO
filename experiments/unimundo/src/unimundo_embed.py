@@ -2,6 +2,7 @@
 import os
 import sys
 sys.path.append(os.getcwd()) 
+sys.path.append(f"{os.getcwd()}/src")
 import numpy as np
 import argparse 
 from gmundo.linalg import compute_dsd_embedding
@@ -111,8 +112,7 @@ def main(args):
             log("\tSaving...")
             np.save(target_dsd_name, tar_dsd)
 
-"""
-            
+    """        
     ###################################### COMPUTING DSD DIST ####################################################3#
     
     source_dist_name = f"{source_base_name}.dsd.dist.npy"
@@ -130,8 +130,7 @@ def main(args):
             log(f"\tSaving...")
             np.save(source_dist_name, src_ddist)
             np.save(target_dist_name, tar_ddist)
-"""
-            
+    """        
     ###################################### COMPUTING LAPLACIAN ######################################################
     
     source_lap_name  = f"{source_base_name}.dsd.rbf_{args.laplacian_param}.npy"
