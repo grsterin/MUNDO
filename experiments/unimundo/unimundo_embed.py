@@ -57,6 +57,12 @@ def main(args):
     source_json = f"{source_base_name}.dsd.json"
     target_json = f"{target_base_name}.dsd.json"
 
+    """
+    The map for source and target networks should be of the form
+    {protein_name: protein_id,
+    ...
+    }
+    """
     src_map     = None
     tar_map     = None
     if (os.path.exists(source_json) and os.path.exists(target_json)):
@@ -105,6 +111,7 @@ def main(args):
             log("\tSaving...")
             np.save(target_dsd_name, tar_dsd)
 
+"""
             
     ###################################### COMPUTING DSD DIST ####################################################3#
     
@@ -123,7 +130,7 @@ def main(args):
             log(f"\tSaving...")
             np.save(source_dist_name, src_ddist)
             np.save(target_dist_name, tar_ddist)
-
+"""
             
     ###################################### COMPUTING LAPLACIAN ######################################################
     
@@ -136,8 +143,8 @@ def main(args):
         tar_ker    = np.load(target_lap_name)
     else:
         log("Computing source and target laplacian kernel")
-        src_ker = laplacian_kernel(src_ddist, gamma=args.laplacian_param)
-        tar_ker = laplacian_kernel(tar_ddist, gamma=args.laplacian_param)
+        src_ker = laplacian_kernel(src_dsd, gamma=args.laplacian_param)
+        tar_ker = laplacian_kernel(tar_dsd, gamma=args.laplacian_param)
         if args.construct_kernel:
             log(f"\tSaving...")
             np.save(source_lap_name, src_ker)
