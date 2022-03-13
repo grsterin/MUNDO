@@ -12,11 +12,18 @@ INPUT_FOLDER=network_dir
 GO_FOLDER=go_dir
 OP_BASE=output_dir
 # DEFAULTS
-SOURCE=bakers_yeast_biogrid
-DEST=fission_yeast_biogrid
-SOURCE_ID=559292
-DEST_ID=4896
-NEIGHBORS=(10 15 20 25 30 35)
+SOURCE=human_12000_biogrid
+DEST=mouse_12000_biogrid
+
+###### TAX_ID:
+## human: 9606
+## mouse: 10090
+## fission: 4896
+## bakers: 559292
+
+SOURCE_ID=9606
+DEST_ID=10090
+NEIGHBORS=(5 10 15 20 25 30 35)
 ALPHA=(0 0.05 0.1 0.2 0.4 0.6 0.8 1)
 GO=(P F C)
 while getopts "s:d:S:D:n:a:g:m:T" args; do
