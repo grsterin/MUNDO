@@ -1,6 +1,10 @@
 import argparse
-from mashup_utils import read_network_file, get_go_lab, get_prot_go_dict
 import os
+import sys
+sys.path.append(os.getcwd()) 
+sys.path.append(f"{os.getcwd()}/src")
+
+from mashup_utils import read_network_file, get_go_lab, get_prot_go_dict
 from gmundo.prediction.scoring import kfoldcv, kfoldcv_with_pr
 from gmundo.prediction.predict import perform_binary_OVA
 import pandas as pd
