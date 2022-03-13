@@ -39,5 +39,5 @@ if [ -z $MASHUP_EMB ] || [ -z $ORG_ID ]; then echo "Either Organism I.D. or MASH
 for G in ${GO_TYPE[@]}
 do
     OUTPUT_LOG_FILE=${OUTPUT_LOGS}/GO-${G}.log
-    sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./src/mashup_classify.py --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --network_source=${SOURCE} --network_target=${DEST} --munk_name=${MUNK} --go_type=${G} --src_org_id=${SOURCE_ID} --tar_org_id=${DEST_ID} --n_neighbors=${N} --verbose --alpha=${A}
+    sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./src/mashup_classify.py --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --mashup_emb=${MASHUP_EMB}  --go_type=${G} --org_id=${ORG_ID}  --verbose 
 done

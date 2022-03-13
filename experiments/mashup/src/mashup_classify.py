@@ -1,3 +1,4 @@
+#!/cluster/tufts/cowenlab/.envs/denoise/bin/python
 import argparse
 import os
 import sys

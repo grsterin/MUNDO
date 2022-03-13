@@ -220,7 +220,7 @@ def learn_embeddings(walks, args):
 	'''
 	walks = [list(map(str, walk)) for walk in walks]
 	print(args)
-	model = Word2Vec(walks, vector_size=args["dimensions"], window=args["window-size"], min_count=0, sg=1, workers=args["workers"]) #, iter=args["iter"])
+	model = Word2Vec(walks, size=args["dimensions"], window=args["window-size"], min_count=0, sg=1, workers=args["workers"], iter=args["iter"])
 	print("Here")
 	fname =  args["intermediate_file_loc"]# datetime.now().strftime("%d-%m-%Y-%H-%M-%S.txt")
 	model.wv.save_word2vec_format(fname)
