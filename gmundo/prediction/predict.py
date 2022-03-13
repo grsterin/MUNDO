@@ -71,7 +71,8 @@ def mundo_predict(target_map: Dict[int, List[int]],
                   n_neighbors: int,
                   target_go_dict: Dict[int, str],
                   source_go_dict: Dict[int, str],
-                  munk_weight: float = 0.25) -> Dict[str, List[Tuple[str, float]]]:
+                  munk_weight: float = 0.25,
+                  split_source_target = True) -> Dict[str, List[Tuple[str, float]]]:
     """
     Performs prediction on the target network,
     Parameters:
@@ -113,8 +114,10 @@ def mundo_predict(target_map: Dict[int, List[int]],
 
     protein_labels = {}
     for p in proteins:
-        n_target_neighbors, n_munk_neighbors = get_neighbors_split(p, target_map, n_neighbors, target_go_dict)
-
+        if split_source_target:
+            n_target_neighbors, n_munk_neighbors = get_neighbors_split(p, target_map, n_neighbors, target_go_dict)
+        else:
+            n_target_neighbors, n_munk_neighbors = n_neighbors, 0
         target_voters = target_map[p][:n_target_neighbors]
         munk_voters = munk_map[p][:n_munk_neighbors] if munk_weight != 0.0 else []
         
@@ -240,4 +243,3 @@ def perform_binary_OVA(E, labels, params = {}, clf_type="LR", confidence = True)
             prb_id = np.argmax(prbs)
             labels[e_id] = sample_keys[prb_id]
     return labels
-

@@ -19,7 +19,8 @@ def construct_predictor_dsd(target_neighbors, n_neighbors=20):
                              n_neighbors,
                              target_prot_go,
                              {},
-                             0.0)
+                             0.0,
+                             split_source_target = False)
     return predictor
 
 
