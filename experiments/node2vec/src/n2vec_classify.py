@@ -1,6 +1,12 @@
+#!/cluster/tufts/cowenlab/.envs/denoise/bin/python
+import sys
+import os
+
+sys.path.append(os.getcwd()) 
+sys.path.append(f"{os.getcwd()}/src")
+
 import argparse
 from n2vec_utils import get_go_lab, get_prot_go_dict
-import os
 from gmundo.prediction.scoring import kfoldcv, kfoldcv_with_pr
 from gmundo.prediction.predict import perform_binary_OVA
 import pandas as pd

@@ -39,5 +39,5 @@ if [ -z $N2VEC_EMB ] || [ -z $ORG_ID ]; then echo "Either Organism I.D. or MASHU
 for G in ${GO_TYPE[@]}
 do
     OUTPUT_LOG_FILE=${OUTPUT_LOGS}/GO-${G}.log
-    sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./n2vec_classify.py --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --n2vec_emb=${N2VEC_EMB}  --go_type=${G} --org_id=${ORG_ID}  --verbose 
+    sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./src/n2vec_classify.py --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --n2vec_emb=${N2VEC_EMB}  --go_type=${G} --org_id=${ORG_ID}  --verbose 
 done
