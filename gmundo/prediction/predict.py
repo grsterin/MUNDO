@@ -72,7 +72,8 @@ def mundo_predict(target_map: Dict[int, List[int]],
                   target_go_dict: Dict[int, str],
                   source_go_dict: Dict[int, str],
                   munk_weight: float = 0.25,
-                  split_source_target = True) -> Dict[str, List[Tuple[str, float]]]:
+                  split_source_target = True,
+                  n_neighbors_munk:int = 0) -> Dict[str, List[Tuple[str, float]]]:
     """
     Performs prediction on the target network,
     Parameters:
@@ -82,6 +83,8 @@ def mundo_predict(target_map: Dict[int, List[int]],
         target_go_f     - both functions that takes target protein and returns the GO labels associated with it.
         source_go_f     - both functions that takes source protein and returns the GO labels associated with it.
         MUNK_weight     - weight to use for MUNK votes.
+        split_source_target - a boolean variable to check if we want to use earlier version of MUNDO, where the source and target neighbors are not chosen from the `n_neighbors`
+        n_neighbors_munk - only selected when `split_source_target` is false.
     Returns:
         Dictionary containing mapping from target proteins to the sorted (in descending order) list of associated labels and their confidence values
     """
@@ -117,7 +120,7 @@ def mundo_predict(target_map: Dict[int, List[int]],
         if split_source_target:
             n_target_neighbors, n_munk_neighbors = get_neighbors_split(p, target_map, n_neighbors, target_go_dict)
         else:
-            n_target_neighbors, n_munk_neighbors = n_neighbors, 0
+            n_target_neighbors, n_munk_neighbors = n_neighbors, n_neighbors_munk
         target_voters = target_map[p][:n_target_neighbors]
         munk_voters = munk_map[p][:n_munk_neighbors] if munk_weight != 0.0 else []
         
