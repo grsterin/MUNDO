@@ -21,7 +21,7 @@ def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, 
                              source_prot_go,
                              alpha,
                              split_source_target = False,
-                             n_neigbors_munk = n_neighbors_munk)
+                             n_neighbors_munk = n_neighbors_munk)
     return predictor
 
 
@@ -159,7 +159,7 @@ def main(args):
     results["f1"] = f1
     
     res = pd.DataFrame(results)
-    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}_alpha_{args.alpha}.tsv", sep = "\t")
+    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}_k-munk_{args.n_neighbors_munk}_alpha_{args.alpha}.tsv", sep = "\t")
     
 if __name__ == "__main__":
     main(parse_args())
