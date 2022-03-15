@@ -12,14 +12,16 @@ import numpy as np
 import json
 
 
-def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, alpha = 0.25):
+def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, n_neighbors_munk = 10, alpha = 0.25):
     def predictor(target_prot_go):
         return mundo_predict(target_neighbors,
                              munk_neighbors,
                              n_neighbors,
                              target_prot_go,
                              source_prot_go,
-                             alpha)
+                             alpha,
+                             split_source_target = False,
+                             n_neigbors_munk = n_neighbors_munk)
     return predictor
 
 
@@ -48,6 +50,7 @@ def parse_args():
     parser.add_argument("--src_org_id", type = int)
     parser.add_argument("--tar_org_id", type = int)
     parser.add_argument("--n_neighbors", type = int, default = 20)
+    parser.add_argument("--n_neighbors_munk", type = int, default = 10)
     parser.add_argument("--rbf_smoothing", default = "0.1")
     parser.add_argument("--verbose", action = "store_true", default = False)
     parser.add_argument("--alpha", default = 0.25, type = float)
@@ -136,6 +139,8 @@ def main(args):
               construct_predictor_mundo(tar_neigh_dict,
                                         munk_neigh_dict,
                                         src_prot_go,
+                                        n_neighbors = args.n_neighbors,
+                                        n_neighbors_munk = args.n_neighbors_munk,
                                         alpha = args.alpha)
               )
     log(f"Accuracies: mean= {np.average(accs)}, std= {np.std(accs)}")
@@ -146,6 +151,8 @@ def main(args):
               construct_predictor_mundo(tar_neigh_dict,
                                         munk_neigh_dict,
                                         src_prot_go,
+                                        n_neighbors = args.n_neighbors,
+                                        n_neighbors_munk = args.n_neighbors_munk,
                                         alpha = args.alpha)
               )
     log(f"F1max: mean= {np.average(f1)}, std= {np.std(f1)}")

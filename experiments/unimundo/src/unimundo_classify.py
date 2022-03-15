@@ -136,6 +136,7 @@ def main(args):
               construct_predictor_mundo(tar_neigh_dict,
                                         munk_neigh_dict,
                                         src_prot_go,
+                                        n_neighbors = args.n_neighbors,
                                         alpha = args.alpha)
               )
     log(f"Accuracies: mean= {np.average(accs)}, std= {np.std(accs)}")
@@ -146,6 +147,7 @@ def main(args):
               construct_predictor_mundo(tar_neigh_dict,
                                         munk_neigh_dict,
                                         src_prot_go,
+                                        n_neighbors = args.n_neighbors,
                                         alpha = args.alpha)
               )
     log(f"F1max: mean= {np.average(f1)}, std= {np.std(f1)}")
