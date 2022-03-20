@@ -2,7 +2,6 @@
 import os
 import sys
 sys.path.append(os.getcwd()) 
-sys.path.append(f"{os.getcwd()}/src")
 import numpy as np
 import argparse 
 from gmundo.linalg import compute_dsd_embedding
@@ -20,7 +19,7 @@ def parse_args():
     parser.add_argument("--biogrid_tsv_folder", help="Folder with biogrid networks converted to tsv files.")
     parser.add_argument("--source_organism_name", help="Source organism name, e.g. 'human'")
     parser.add_argument("--target_organism_name", help="Target organism name, e.g. 'mouse'")
-    parser.add_argument("--mapping", help="Name of network mapping file without extension, e.g. 'mouse-human-no-blast.alignment'")
+    parser.add_argument("--mapping", default = "hubalign", help="Name of network mapping file without extension, e.g. 'mouse-human-no-blast.alignment'")
     parser.add_argument("--mapping_num_of_pairs", type=int, default=300,
                         help="Number of aligned node pairs to be used for coembedding")
     parser.add_argument("--construct_dsd", action="store_true")
@@ -43,9 +42,10 @@ def main(args):
         if args.verbose:
             print(strng)
 
+    munk_folder    = f"{args.working_folder}/munk_embeddings/{args.source_organism_name}-{args.target_organism_name}"
     check_all_files([f"{args.biogrid_tsv_folder}/{args.source_organism_name}.tsv",
                      f"{args.biogrid_tsv_folder}/{args.target_organism_name}.tsv",
-                     f"{args.working_folder}/{args.mapping}.tsv"])
+                     f"{munk_folder}/{args.mapping}.tsv"])
                     
     log("Reading networks from BIOGRID files")
     g_source = read_network_from_tsv(f"{args.biogrid_tsv_folder}/{args.source_organism_name}.tsv")
@@ -112,7 +112,6 @@ def main(args):
             log("\tSaving...")
             np.save(target_dsd_name, tar_dsd)
 
-
     """
     ###################################### COMPUTING DSD DIST ####################################################3#     
     source_dist_name = f"{source_base_name}.dsd.dist.npy"
@@ -130,8 +129,8 @@ def main(args):
             log(f"\tSaving...")
             np.save(source_dist_name, src_ddist)
             np.save(target_dist_name, tar_ddist)
-    """        
     ###################################### COMPUTING LAPLACIAN ######################################################
+    """
 
     source_lap_name  = f"{source_base_name}.dsd.rbf_{args.laplacian_param}.npy"
     target_lap_name  = f"{target_base_name}.dsd.rbf_{args.laplacian_param}.npy"
@@ -151,12 +150,12 @@ def main(args):
     
 
     ############################# COMPUTING MUNK ##############################################
-    munk_folder = f"{args.working_folder}/{args.mapping}_lap_ker_{args.laplacian_param}.munk.npy"
+    munk_out = f"{munk_folder}/{args.mapping}.dim_{args.mapping_num_of_pairs}.munk.npy"
     if os.path.exists(munk_folder):
         print(f"MUNK matrix already computed! Ending...")
     else:
         log("Computing MUNK coembedding")
-        mapping = read_mapping(f"{args.working_folder}/{args.mapping}.tsv", args.mapping_num_of_pairs, src_map, tar_map, separator="\t")
+        mapping = read_mapping(f"{munk_folder}/{args.mapping}.tsv", args.mapping_num_of_pairs, src_map, tar_map)
         munk_mat = coembed_networks(src_ker, tar_ker, mapping, verbose=True)
     
         if args.save_munk_matrix:
