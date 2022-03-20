@@ -2,6 +2,7 @@
 import os
 import sys
 sys.path.append(os.getcwd()) 
+sys.path.append(f"os.getcwd()/src") 
 import numpy as np
 import argparse 
 from gmundo.linalg import compute_dsd_embedding
@@ -160,7 +161,7 @@ def main(args):
     
         if args.save_munk_matrix:
             log(f"\t Saving...")
-            np.save(munk_folder, munk_mat)
+            np.save(munk_out, munk_mat)
 
 
 if __name__ == "__main__":
