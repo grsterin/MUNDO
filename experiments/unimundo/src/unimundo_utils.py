@@ -57,7 +57,7 @@ def read_network_file(network):
 def read_mapping(map_file, number_of_pairs, src_map, tar_map, src_name, tar_name):
     """
     """
-    df = pd.read_csv(map_file, delim_whitespace = True, nrows=number_of_pairs, header = None)
+    df = pd.read_csv(map_file, delim_whitespace = True, nrows=number_of_pairs)
     df[[src_name, tar_name]] = df[[src_name, tar_name]].astype(str)
     df = df.replace({src_name: src_map, tar_name: tar_map})
     return df[[src_name, tar_name]].values.tolist()
