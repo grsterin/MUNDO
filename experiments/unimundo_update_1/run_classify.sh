@@ -30,7 +30,7 @@ GO=(P F C)
 MAPPING=(hubalign)
 DIM=(20 50 100 150 200 250 300)
 
-while getopts "s:d:S:D:n:a:g:M:T:bh:" args; do
+while getopts "s:d:S:D:n:a:g:M:Tbh:" args; do
     case $args in
 	s) SOURCE=${OPTARG}
 	   ;;
