@@ -44,6 +44,7 @@ def parse_args():
     parser.add_argument("--network_source", help = "The name of the source network, which is inside the input_folder: no extensions on the name. If the name of the source file is file.txt, you input only file here")
     parser.add_argument("--network_target", help = "The name of the target network, which is inside the output folder as well: same naming convention as --network_source")
     parser.add_argument("--munk_name", help = "The name of the Munk coembedding network, without extension")
+    parser.add_argument("--munk_dim", default = 100, type = int, help = "The size of munk embedding")
     parser.add_argument("--go_type", default = "F", choices = ["P", "F", "C"])
     parser.add_argument("--min_level_tar", default = 5, type = int)
     parser.add_argument("--min_prot_tar", default = 50, type = int)
@@ -51,7 +52,7 @@ def parse_args():
     parser.add_argument("--tar_org_id", type = int)
     parser.add_argument("--n_neighbors", type = int, default = 20)
     parser.add_argument("--n_neighbors_munk", type = int, default = 10)
-    parser.add_argument("--rbf_smoothing", default = "0.1")
+    parser.add_argument("--lap_smoothing", default = "0.1")
     parser.add_argument("--verbose", action = "store_true", default = False)
     parser.add_argument("--alpha", default = 0.25, type = float)
     return parser.parse_args()
@@ -62,7 +63,7 @@ def main(args):
         if args.verbose:
             print(strng)
     
-    munk_url = f"{args.input_folder}/{args.munk_name}"
+    munk_url = f"{args.input_folder}/munk_embeddings/{args.network_target}-{args.network_source}/{args.munk_name}.dim_{args.munk_dim}.lap_{args.lap_smoothing}.munk"
     tar_url = f"{args.input_folder}/{args.network_target}"
     src_url = f"{args.input_folder}/{args.network_source}"
     
