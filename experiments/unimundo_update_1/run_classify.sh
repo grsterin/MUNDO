@@ -64,7 +64,7 @@ OUTPUT_FLD=${OP_BASE}/${SOURCE}-${DEST}
 OUTPUT_LOGS=${OP_BASE}/logs
 
 if [ ! -d ${OUTPUT_LOGS} ]; then mkdir ${OUTPUT_LOGS}; fi
-if [ ! -d ${OUTPUT_FOLDER} ]; then mkdir ${OUTPUT_FOLDER}; fi
+if [ ! -d ${OUTPUT_FLD} ]; then mkdir ${OUTPUT_FLD}; fi
 
 # if [ -z $MUNK ]; then echo "MUNK embedding not specified; exiting..."; exit 1; fi
 

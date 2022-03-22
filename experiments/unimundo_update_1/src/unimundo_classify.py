@@ -52,7 +52,7 @@ def parse_args():
     parser.add_argument("--tar_org_id", type = int)
     parser.add_argument("--n_neighbors", type = int, default = 20)
     parser.add_argument("--n_neighbors_munk", type = int, default = 10)
-    parser.add_argument("--lap_smoothing", default = "0.1")
+    parser.add_argument("--rbf_smoothing", default = "0.1")
     parser.add_argument("--verbose", action = "store_true", default = False)
     parser.add_argument("--alpha", default = 0.25, type = float)
     return parser.parse_args()
@@ -63,7 +63,7 @@ def main(args):
         if args.verbose:
             print(strng)
     
-    munk_url = f"{args.input_folder}/munk_embeddings/{args.network_target}-{args.network_source}/{args.munk_name}.dim_{args.munk_dim}.lap_{args.lap_smoothing}.munk"
+    munk_url = f"{args.input_folder}/munk_embeddings/{args.network_target}-{args.network_source}/{args.munk_name}.dim_{args.munk_dim}.lap_{args.rbf_smoothing}.munk"
     tar_url = f"{args.input_folder}/{args.network_target}"
     src_url = f"{args.input_folder}/{args.network_source}"
     
