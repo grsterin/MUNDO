@@ -2,7 +2,7 @@
 import os
 import sys
 sys.path.append(os.getcwd()) 
-sys.path.append(f"os.getcwd()/src") 
+sys.path.append(f"{os.getcwd()}/src") 
 import numpy as np
 import argparse 
 from gmundo.linalg import compute_dsd_embedding
@@ -43,7 +43,7 @@ def main(args):
         if args.verbose:
             print(strng)
 
-    munk_folder    = f"{args.working_folder}/munk_embeddings/{args.source_organism_name}-{args.target_organism_name}"
+    munk_folder    = f"{args.working_folder}/munk_embeddings/{args.target_organism_name}-{args.source_organism_name}"
     check_all_files([f"{args.biogrid_tsv_folder}/{args.source_organism_name}.tsv",
                      f"{args.biogrid_tsv_folder}/{args.target_organism_name}.tsv",
                      f"{munk_folder}/{args.mapping}.tsv"])
@@ -151,8 +151,8 @@ def main(args):
     
 
     ############################# COMPUTING MUNK ##############################################
-    munk_out = f"{munk_folder}/{args.mapping}.dim_{args.mapping_num_of_pairs}.munk.npy"
-    if os.path.exists(munk_folder):
+    munk_out = f"{munk_folder}/{args.mapping}.dim_{args.mapping_num_of_pairs}.lap_{args.laplacian_param}.munk.npy"
+    if os.path.exists(munk_out):
         print(f"MUNK matrix already computed! Ending...")
     else:
         log("Computing MUNK coembedding")
