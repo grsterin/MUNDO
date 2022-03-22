@@ -160,7 +160,7 @@ def main(args):
     results["f1"] = f1
     
     res = pd.DataFrame(results)
-    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}_k-munk_{args.n_neighbors_munk}_alpha_{args.alpha}.tsv", sep = "\t")
+    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}_k-munk_{args.n_neighbors_munk}_alpha_{args.alpha}_munk_dim_{args.munk_dim}.tsv", sep = "\t")
     
 if __name__ == "__main__":
     main(parse_args())
