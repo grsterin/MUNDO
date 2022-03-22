@@ -156,7 +156,12 @@ def main(args):
         print(f"MUNK matrix already computed! Ending...")
     else:
         log("Computing MUNK coembedding")
-        mapping = read_mapping(f"{munk_folder}/{args.mapping}.tsv", args.mapping_num_of_pairs, src_map, tar_map)
+        mapping = read_mapping(f"{munk_folder}/{args.mapping}.tsv",
+                               args.mapping_num_of_pairs,
+                               src_map,
+                               tar_map,
+                               src_name = args.source_organism_name,
+                               tar_name = args.target_organism_name)
         munk_mat = coembed_networks(src_ker, tar_ker, mapping, verbose=True)
     
         if args.save_munk_matrix:

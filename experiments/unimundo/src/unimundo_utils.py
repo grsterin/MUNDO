@@ -48,16 +48,16 @@ def get_prot_go_dict(go_prot_dict, entrez_id_map):
 
 
 def read_network_file(network):
+    """
+    """
     net = nx.read_weighted_edgelist(network, nodetype = str)
     return net
 
 
-def read_mapping(map_file, number_of_pairs, src_map, tar_map):
+def read_mapping(map_file, number_of_pairs, src_map, tar_map, src_name, tar_name):
+    """
+    """
     df = pd.read_csv(map_file, delim_whitespace = True, nrows=number_of_pairs, header = None)
-    df[[0, 1]] = df[[0, 1]].astype(str)
-    print(tar_map)
-    out_map = [1 if k in tar_map else 0 for k in df[0]]
-    print(np.sum(out_map))
-    df = df.replace({0: tar_map, 1: src_map})
-    print(df)
-    return df[[1, 0]].values.tolist()
+    df[[src_name, tar_name]] = df[[src_name, tar_name]].astype(str)
+    df = df.replace({src_name: src_map, tar_name: tar_map})
+    return df[[src_name, tar_name]].values.tolist()
