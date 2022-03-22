@@ -72,14 +72,14 @@ for M in ${MAPPING[@]}
 do
     OUTPUT_FOLDER=${OUTPUT_FLD}/${M}
     if [ ! -d ${OUTPUT_FOLDER} ]; then mkdir ${OUTPUT_FOLDER}; fi
-    
+    echo "Mapping:= ${M}"
     for G in ${GO[@]}
     do
 	for A in ${ALPHA[@]}
 	do
 	    for N in ${NEIGHBORS[@]}
 	    do
-		for D in ${DIMS[@]}
+		for D in ${DIM[@]}
 		do
 		    OUTPUT_LOG_FILE=${OUTPUT_LOGS}/${SOURCE}-${DEST}-${M}-GO-${G}-ALPHA-${A}-NEIGHBORS-${N}-MUNK-DIMS-${D}.log
 		    sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./src/unimundo_classify.py --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --network_source=${SOURCE} --network_target=${DEST} --munk_name=${M} --go_type=${G} --src_org_id=${SOURCE_ID} --tar_org_id=${DEST_ID} --n_neighbors=${N} --verbose --alpha=${A} --n_neighbors_munk=${M_NEIGHBORS} --munk_dim=${D}
