@@ -1,13 +1,17 @@
 import numpy as np
+import pandas as pd
 from numpy.linalg import pinv, norm
 import subprocess
+from tqdm import tqdm
 import pathlib
 import os
 
 ################### ISORANK CODE #############################
-def isorank(G1, G2, row_map, col_map, alpha, matches, E = None, iterations = 5):
+def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations = 5, saveto = None, rowname = "source", colname = "target"):
     """
-    Compute the ISORANK matches from G1 and G2, two networkx graphs.
+    Compute the ISORANK matches from G1 and G2, two networkx graphs. These graphs are labeled
+    using the actual name of the nodes
+
     E is the sequence based similarity score.
     
     row_map : dict{G1_nodes -> G1_ID}, size = m
@@ -15,14 +19,31 @@ def isorank(G1, G2, row_map, col_map, alpha, matches, E = None, iterations = 5):
     
     E : numpy matrix {m x n}, sequence similarity score
     """
-    def _isorank_compute_Aij(i, j, m, n):
-        A = np.zeros((m, n))             
-        for u, u_id in row_map.items():
-            for v, v_id in col_map.items():
-                A[u_id, v_id] = (1. / (len(G1[u]) * len(G2[v])) if 
-                          (G1.has_edge(i, u) and G2.has_edge(j, v)) 
-                          else 0)
-        return A
+
+    i_row_map  = {value: key for key, value in row_map.items()}
+    i_col_map  = {value: key for key, value in col_map.items()}
+    
+
+    def _isorank_mult_R_A_ij(i, j, R):
+        """
+        Suffix ending with _ imply that the variable is made up of true label name.
+        The indices i, j are the index labels, not true labels.
+        """
+        A  = np.zeros((m, n))
+        i_ = i_row_map[i]
+        j_ = i_col_map[j]
+        i_neighbors_ = G1.neighbors(i_)
+        j_neighbors_ = G2.neighbors(j_)
+        
+        i_neighbors  = [row_map[i_n_] for i_n_ in i_neighbors_]
+        j_neighbors  = [col_map[j_n_] for j_n_ in j_neighbors_]
+
+        A_ij_local   = np.zeros((len(i_neighbors), len(j_neighbors)))
+        for id_i, ni in enumerate(i_neighbors):
+            for id_j, nj in enumerate(j_neighbors):
+                A_ij_local[id_i, id_j] = 1. / (len(G1[i_row_map[ni]]) * len(G2[i_col_map[nj]]))
+        R_local      = R[np.ix_(i_neighbors, j_neighbors)]
+        return np.sum(R_local * A_ij_local)
     
     def _isorank_compute_next_r(R, E = None, alpha = 1):
         """
@@ -30,24 +51,40 @@ def isorank(G1, G2, row_map, col_map, alpha, matches, E = None, iterations = 5):
         """
         m, n   = R.shape
         R_next = np.zeros((m, n))
-        for i in range(m):
-            for j in range(n):
-                R_next[i, j] = alpha * np.sum(_isorank_compute_Aij(i, j, m, n) * R)
+
+        for id_ in tqdm(range(m * n)):
+            i, j = [int(id_ / n), id_ % n]
+            R_next[i, j] = alpha * _isorank_mult_R_A_ij(i, j, R)
         if E is not None:
             R_next += (1-alpha) * E
         return R_next / norm(R_next)
     
     def _isorank_one_to_one(R_final):
         """
-        Find the best pairings from the obtained R_final
+        Find the best pairings from the obtained R_final, using GREEDY method
         """
         R_temp        = np.copy(R_final)
         best_pairings = []
-        for i in range(matches):
-            p, q = np.unravel_index(np.argmax(R_temp, axis = None), R_final.shape)
-            R_temp[p, :] = -100
-            R_temp[:, q] = -100
-            best_pairings.append((p, q))
+        ps, qs        = np.unravel_index(np.argsort(-R_temp.flatten()), R_final.shape)
+
+        row_used      = set()
+        col_used      = set()
+
+        pairings = min(*R.shape) if matches is None else min(matches, min(*R.shape))
+        print(f"Number of pairings... {pairings}")
+        print(f"Len(ps) = {len(ps)} Len(qs) = {len(qs)}")
+            
+        for p, q in zip(ps, qs):
+            if p in row_used or q in col_used:
+                continue
+            row_used.add(p)
+            col_used.add(q)
+
+            best_pairings.append((p, q, R_final[p, q]))
+            if len(best_pairings) >= pairings:
+                print("Break complete")
+                break
+                
         return best_pairings
     
     m      = len(row_map)
@@ -57,18 +94,21 @@ def isorank(G1, G2, row_map, col_map, alpha, matches, E = None, iterations = 5):
     
     # Compute Isorank matrix
     for i in range(iterations):
+        print(f"Running iterations {i}...")
         R_next = _isorank_compute_next_r(R, E, alpha)
         errors.append(np.linalg.norm(R - R_next, ord = "fro"))
         R      = R_next
     
     # Find the best pairs
     best_pairs = _isorank_one_to_one(R)
-    
-    i_row_map  = {value: key for key, value in row_map.items()}
-    i_col_map  = {value: key for key, value in col_map.items()}
-    
-    best_pairs = [(i_row_map[p], i_col_map[q]) for p, q in best_pairs]
-    
+    print(len(best_pairs))
+    if saveto:
+        # convert back to true label
+        best_pairs = [(i_row_map[p], i_col_map[q], w) for p, q, w in best_pairs]
+        mappings   = pd.DataFrame(best_pairs, columns = [rowname, colname, "weight"])
+        mappings.to_csv(saveto, index = None, sep = "\t")
+        
+    # The output is going to be the best pairings from 
     return best_pairs, R, errors
 
 
