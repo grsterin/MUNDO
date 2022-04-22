@@ -89,10 +89,15 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
     
     m      = len(row_map)
     n      = len(col_map)
-    R      = np.eye(m, n)
+    # Random Initialization
+    R      = np.random.rand(m, n)
+    # Normalize
+    R      = R / norm(R)
+    
     errors = []
     
     # Compute Isorank matrix
+    R_next     = None
     for i in range(iterations):
         print(f"Running iterations {i}...")
         R_next = _isorank_compute_next_r(R, E, alpha)
