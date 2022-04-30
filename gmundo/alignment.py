@@ -103,15 +103,15 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
         R_next = _isorank_compute_next_r(R, E, alpha)
         errors.append(np.linalg.norm(R - R_next, ord = "fro"))
         R      = R_next
-    
-    # Find the best pairs
-    best_pairs = _isorank_one_to_one(R)
-    print(len(best_pairs))
-    if saveto:
-        # convert back to true label
-        best_pairs = [(i_row_map[p], i_col_map[q], w) for p, q, w in best_pairs]
-        mappings   = pd.DataFrame(best_pairs, columns = [rowname, colname, "weight"])
-        mappings.to_csv(saveto, index = None, sep = "\t")
+
+        if saveto:
+            # Find the best pairs
+            best_pairs = _isorank_one_to_one(R)
+            # print(len(best_pairs))
+            # convert back to true label
+            best_pairs = [(i_row_map[p], i_col_map[q], w) for p, q, w in best_pairs]
+            mappings   = pd.DataFrame(best_pairs, columns = [rowname, colname, "weight"])
+            mappings.to_csv(f"IT-{i}-{saveto}", index = None, sep = "\t")
         
     # The output is going to be the best pairings from 
     return best_pairs, R, errors
