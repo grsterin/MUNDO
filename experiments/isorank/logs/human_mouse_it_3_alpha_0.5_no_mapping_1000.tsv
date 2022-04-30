@@ -1,0 +1,10 @@
+Reading Networks...
+Reading BLAST sequence scores...
+	Number of positive BLAST scores: 652972
+Running Isorank...
+Traceback (most recent call last):
+  File "/var/spool/slurm/job14741277/slurm_script", line 81, in <module>
+    main(get_params())
+  File "/var/spool/slurm/job14741277/slurm_script", line 64, in main
+    E[p, q] = w
+IndexError: index 11995 is out of bounds for axis 1 with size 11992

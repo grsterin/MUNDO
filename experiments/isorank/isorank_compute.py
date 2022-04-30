@@ -2,7 +2,7 @@
 import sys
 import json
 import networkx as nx
-
+import os
 sys.path.append(os.getcwd()) 
 sys.path.append(f"{os.getcwd()}")
 from gmundo.alignment import isorank
@@ -23,7 +23,8 @@ def get_params():
     parser.add_argument("--no_mapping", default = 1000, type = int)
     parser.add_argument("--alpha", default = 0.5, type = float)
     parser.add_argument("--iterations", default = 3, type = int)
-    return parser.parser_args()
+    parser.add_argument("--verbose", action = "store_true", default = True)
+    return parser.parse_args()
 
 def main(args):
     def log(strng):
@@ -49,9 +50,13 @@ def main(args):
 
     
     # Filter
-    dfseq = dfseq.loc[dfseq[ssrc].isin(source_map) & dfseq[star].isin(target_map), :]
+    dfseq = dfseq.loc[dfseq[ssrc].isin(source_map) & dfseq[star].isin(target_map), [ssrc, star, "weight"]]
     log(f"\tNumber of positive BLAST scores: {len(dfseq)}")
-    dfseq = dfseq.replace({ssrc: source_map, star: target_map})
+
+    # This seems to be taking too much time
+    # dfseq = dfseq.replace({ssrc: source_map, star: target_map})
+    # assert dfseq[ssrc].max() < len(source_map) and dfseq[star].max() < len(target_map)
+    
     max_wt = dfseq["weight"].max()
     dfseq["weight"] = dfseq["weight"]/float(max_wt)
     
@@ -59,6 +64,8 @@ def main(args):
     log("Running Isorank...")
     E       = np.zeros((len(source_nodes), len(target_nodes)))
     for p, q, w in dfseq.values:
+        assert p in source_map and q in target_map
+        p, q    = (source_map[p], target_map[q])
         E[p, q] = w
 
     # Compute and save isorank
