@@ -42,6 +42,7 @@ def parse_args():
     parser.add_argument("--network_source", help = "The name of the source network, which is inside the input_folder: no extensions on the name. If the name of the source file is file.txt, you input only file here")
     parser.add_argument("--network_target", help = "The name of the target network, which is inside the output folder as well: same naming convention as --network_source")
     parser.add_argument("--munk_name", help = "The name of the Munk coembedding network, without extension")
+    parser.add_argument("--landmark_no", help = "Landmark number")
     parser.add_argument("--go_type", default = "F", choices = ["P", "F", "C"])
     parser.add_argument("--min_level_tar", default = 5, type = int)
     parser.add_argument("--min_prot_tar", default = 50, type = int)
@@ -154,7 +155,7 @@ def main(args):
     results["f1"] = f1
     
     res = pd.DataFrame(results)
-    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}_alpha_{args.alpha}.tsv", sep = "\t")
+    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}_alpha_{args.alpha}_landmark_{args.landmark_no}.tsv", sep = "\t")
     
 if __name__ == "__main__":
     main(parse_args())

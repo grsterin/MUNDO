@@ -7,7 +7,9 @@ SBATCH_OPTS="\
 --time=1-10:00:00 \
 "
 
-DIMS=(20 50 100 150 200 250 300)
+DIMS=(5 10 15 20 25 30)
+#DIMS=(20 50 100 150 200 250 300)
+#DIMS=(20 30 50 70 100)
 while getopts "s:d:m:p:" args; do
     case $args in
 	s) SOURCE=$OPTARG
@@ -21,7 +23,7 @@ while getopts "s:d:m:p:" args; do
     esac
 done
 
-WORKING_FOLDER=gsterin-scratch
+WORKING_FOLDER=gsterin-scratch4
 
 for DIM in ${DIMS[@]}; do
     OUTPUT=${WORKING_FOLDER}/network_logs/MUNDO_${SOURCE}_${DEST}_${DIM}_UMUNDO.log
