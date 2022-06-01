@@ -320,7 +320,7 @@ def main(args):
     results["f1"] = f1
     
     res = pd.DataFrame(results)
-    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.n_neighbors}_alpha_{args.alpha}_landmark_{args.landmark_no}.tsv", sep = "\t")
+    res.to_csv(f"{args.output_folder}/{args.go_type}_k_{args.source_neighbors}:{args.target_neighbors}_alpha_{args.alpha}_landmark_{args.landmark_no}.tsv", sep = "\t")
     
 if __name__ == "__main__":
     main(parse_args())
