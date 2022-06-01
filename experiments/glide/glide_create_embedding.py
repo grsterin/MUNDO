@@ -153,7 +153,7 @@ def parse_args():
     parser.add_argument("--src_org_id", type = int)
     parser.add_argument("--tar_org_id", type = int)
     parser.add_argument("--source_neighbors", type = int, default = 10)
-    parser.add_neighbors("--target_neighbors", type = int, default = 20)
+    parser.add_argument("--target_neighbors", type = int, default = 20)
     parser.add_argument("--verbose", action = "store_true", default = False)
     parser.add_argument("--alpha", default = 0.25, type = float)
     return parser.parse_args()
