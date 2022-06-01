@@ -134,6 +134,9 @@ def target_source_neighbor(source_name,
 
 """
 We are assuming the networks are always represented using the ENTREZ protein ids, which are essentially integers.
+
+python glide_create_embedding_and_classify.py --input_folder net --go_folder go --output_folder . --network_source bakers_yeast_biogrid --network_target fission_yeast_biogrid --landmark_file fission-yeast-bakers-yeast-with-blast.alignment.tsv 
+--landmark_no 100 
 """
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -164,6 +167,7 @@ def main(args):
     
     tar_url = f"{args.input_folder}/{args.network_target}"
     src_url = f"{args.input_folder}/{args.network_source}"
+    landmark_file = f"{args.input_folder}/{args.landmark_file}"
     
     # Compute source and target RBF file
     source_R, s_nodemap = compute_DSD_RBF(src_url)
@@ -205,7 +209,7 @@ def main(args):
     tar_neighbors = np.argsort(-source_R, axis = 1)[:, :args.n_neighbors]
     munk_neighbors = target_source_neighbor(args.network_source, 
                         args.network_target, 
-                        args.landmark_file, # Use it to map target landmarks to source
+                        landmark_file, # Use it to map target landmarks to source
                         target_R, # Use it to find the closest landmarks
                         source_R,
                         s_nodemap, # source symbol -> id
