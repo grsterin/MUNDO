@@ -106,7 +106,7 @@ def target_source_neighbor(source_name,
     
     # Target to source map
     land_df = pd.read_csv(landmark_file, sep = "\t")
-    land_df = land_df[land_df[source_name].isin(set(source_map.keys()))) & land_df[target_name].isin(set(target_map.keys()))]
+    land_df = land_df[land_df[source_name].isin(set(source_map.keys())) & land_df[target_name].isin(set(target_map.keys()))]
     print(f"Size of filtered landmarks {len(land_df)}")
     land_df = land_df.head(no_landmarks)
     tar_src_ent = {k:i for k, i in land_df[[target_name, source_name]].values} # target symbol landmarks -> source symbol landmarks
