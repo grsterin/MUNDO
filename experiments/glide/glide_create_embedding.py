@@ -19,7 +19,7 @@ def compute_DSD_RBF(network_file,
                     lm=1, 
                     normalized=False, 
                     donot_recompute = False):
-    save_loc = f"{network_file}.dsd.rbf_0.1..npy"
+    save_loc = f"{network_file}.dsd.rbf_0.1.npy"
     A        = None
     if os.path.exists(save_loc) and save_prefix != "":
         """
