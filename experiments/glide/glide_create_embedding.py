@@ -70,14 +70,15 @@ def compute_DSD_RBF(network_file,
     return R, nodemap
 
 
-def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, alpha = 0.25):
+def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, alpha = 0.25, n_neighbors_munk = 10):
     def predictor(target_prot_go):
         return mundo_predict(target_neighbors,
                              munk_neighbors,
                              n_neighbors,
                              target_prot_go,
                              source_prot_go,
-                             alpha)
+                             alpha,
+                             n_neighbors_munk = n_neighbors_munk)
     return predictor
 
 
