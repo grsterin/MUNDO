@@ -21,11 +21,11 @@ def compute_DSD_RBF(network_file,
                     donot_recompute = False):
     save_loc = f"{network_file}.dsd.rbf_0.1.npy"
     A        = None
-    if os.path.exists(save_loc) and save_prefix != "":
+    if os.path.exists(save_loc) and network_file != "":
         """
         Already Precomputed
         """
-        with open(f"{save_prefix}.dsd.json", "r") as jf:
+        with open(f"{network_file}.dsd.json", "r") as jf:
             nodemap = json.load(jf)
         return np.load(save_loc), nodemap
     elif donot_recompute:
