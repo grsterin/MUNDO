@@ -84,7 +84,7 @@ do
 				for D in ${DIM[@]}
 				do
 		    		OUTPUT_LOG_FILE=${OUTPUT_LOGS}/${SOURCE}-${DEST}-${M}-GO-${G}-ALPHA-${A}-NEIGHBORS-${N}-MUNK-DIMS-${D}.log
-		    		sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./glide_create_embedding.py --landmark_file=${LANDMARK_FILE} --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --network_source=${SOURCE} --network_target=${DEST} --landmark_file=${MAPPING} --go_type=${G} --src_org_id=${SOURCE_ID} --tar_org_id=${DEST_ID} --target_neighbors=${N} --verbose --alpha=${A} --source_neighbors=${M} --landmark_no ${D}
+		    		sbatch $SBATCH_OPTS -o ${OUTPUT_LOG_FILE} ./glide_create_embedding.py --landmark_file=${LANDMARK_FILE} --input_folder=${INPUT_FOLDER} --go_folder=${GO_FOLDER} --output_folder=${OUTPUT_FOLDER} --network_source=${SOURCE} --network_target=${DEST} --go_type=${G} --src_org_id=${SOURCE_ID} --tar_org_id=${DEST_ID} --target_neighbors=${N} --verbose --alpha=${A} --source_neighbors=${M} --landmark_no ${D}
 		    		if [ ! -z $TEST ]; then echo "Testing complete..."; exit 0; fi
 				done
 			done
