@@ -7,6 +7,7 @@ from gmundo.prediction.predict import mundo_predict
 from gmundo.prediction.scoring import kfoldcv, kfoldcv_with_pr
 from glide_utils import get_go_lab, get_prot_go_dict, get_go_lab_src
 import json
+from gmundo.prediction.predict import mundo_predict
 import argparse
 import numpy as np
 import pandas as pd
@@ -69,19 +70,14 @@ def compute_DSD_RBF(network_file,
     return R, nodemap
 
 
-def construct_predictor_dsd(target_neighbors, n_neighbors=20):
+def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, alpha = 0.25):
     def predictor(target_prot_go):
-        """
-        MUNDO with munk weight set to 0 is basically pure DSD,
-        so we can just reuse mundo_predict method here
-        """
         return mundo_predict(target_neighbors,
-                             {},
+                             munk_neighbors,
                              n_neighbors,
                              target_prot_go,
-                             {},
-                             0.0,
-                             split_source_target = False)
+                             source_prot_go,
+                             alpha)
     return predictor
 
 
