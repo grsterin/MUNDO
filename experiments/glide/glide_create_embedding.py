@@ -105,7 +105,7 @@ def target_source_neighbor(source_name,
                         ):
     
     # Target to source map
-    land_df = pd.read_csv(landmark_file, sep = "\t")
+    land_df = pd.read_csv(landmark_file, sep = "\t").astype({source_name: str, target_name: str})
     print(land_df)
     print(list(source_map.items())[:10])
     print(list(target_map.items())[:10])
