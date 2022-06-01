@@ -138,7 +138,7 @@ def target_source_neighbor(source_name,
     m, _ = target_RBF.shape
     munk_neighbors = np.zeros((m, no_source_neighbors))
     for k in range(m):
-        munk_neighbors[m] = src_landmark_RBF_neighbors[src_landmark_idmap[target_to_source_landmarks[k]]]
+        munk_neighbors[k] = src_landmark_RBF_neighbors[src_landmark_idmap[target_to_source_landmarks[k]]]
     return munk_neighbors
 
 """
