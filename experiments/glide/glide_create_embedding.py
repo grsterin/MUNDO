@@ -17,7 +17,8 @@ import pandas as pd
 def compute_DSD_RBF(network_file, 
                     t=-1, 
                     lm=1, 
-                    normalized=False):
+                    normalized=False, 
+                    donot_recompute = False):
     save_loc = f"{network_file}.dsd.rbf_0.1..npy"
     A        = None
     if os.path.exists(save_loc) and save_prefix != "":
@@ -27,10 +28,12 @@ def compute_DSD_RBF(network_file,
         with open(f"{save_prefix}.dsd.json", "r") as jf:
             nodemap = json.load(jf)
         return np.load(save_loc), nodemap
-
+    elif donot_recompute:
+        print("Previous computation of DSD not found! Exiting...")
+        sys.exit(1)
     # Read the network file
-    pd = df.read_csv(f"{network_file}.txt", sep = "\t", header = None)
-    nodemap = {k:i for i, k in enumerate(set(pd[0]).union(set(pd[1])))}
+    df = pd.read_csv(f"{network_file}.txt", sep = "\t", header = None)
+    nodemap = {k:i for i, k in enumerate(set(df[0]).union(set(df[1])))}
     edges = pd.replace({0: nodemap, 1:nodemap})[[0,1]].values
 
     # Compute adjacency matrix
@@ -170,8 +173,8 @@ def main(args):
     landmark_file = f"{args.input_folder}/{args.landmark_file}"
     
     # Compute source and target RBF file
-    source_R, s_nodemap = compute_DSD_RBF(src_url)
-    target_R, t_nodemap = compute_DSD_RBF(tar_url)
+    source_R, s_nodemap = compute_DSD_RBF(src_url, donot_recompute = True)
+    target_R, t_nodemap = compute_DSD_RBF(tar_url, donot_recompute = True)
     
     r_s_nodemap = {val:key for key, val in s_nodemap.items()}
     r_t_nodemap = {val:key for key, val in t_nodemap.items()}
