@@ -1,0 +1,9 @@
+Collecting gprofiler-official
+  Downloading gprofiler_official-1.0.0-py3-none-any.whl (9.3 kB)
+Requirement already satisfied: requests in /home/kapil/anaconda3/envs/mundo/lib/python3.7/site-packages (from gprofiler-official) (2.26.0)
+Requirement already satisfied: urllib3<1.27,>=1.21.1 in /home/kapil/anaconda3/envs/mundo/lib/python3.7/site-packages (from requests->gprofiler-official) (1.26.7)
+Requirement already satisfied: certifi>=2017.4.17 in /home/kapil/anaconda3/envs/mundo/lib/python3.7/site-packages (from requests->gprofiler-official) (2021.10.8)
+Requirement already satisfied: charset-normalizer~=2.0.0; python_version >= "3" in /home/kapil/anaconda3/envs/mundo/lib/python3.7/site-packages (from requests->gprofiler-official) (2.0.9)
+Requirement already satisfied: idna<4,>=2.5; python_version >= "3" in /home/kapil/anaconda3/envs/mundo/lib/python3.7/site-packages (from requests->gprofiler-official) (3.1)
+Installing collected packages: gprofiler-official
+Successfully installed gprofiler-official-1.0.0

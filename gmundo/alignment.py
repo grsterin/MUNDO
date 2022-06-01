@@ -48,6 +48,7 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
     def _isorank_compute_next_r(R, E = None, alpha = 1):
         """
         Performs the R = AR operation, where R is a matrix and A is a 4 dimensional tensor.
+        
         """
         m, n   = R.shape
         R_next = np.zeros((m, n))
