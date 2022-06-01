@@ -130,7 +130,7 @@ def target_source_neighbor(source_name,
     src_landmark_ids = [source_map[k] for k in tar_src_ent.values()] # Get all source landmarks
     src_landmark_idmap = {k:i for i, k in enumerate(src_landmark_ids)} # source id to source idd.
     src_landmark_RBF = source_RBF[src_landmark_ids, :] # For each landmark, get `k=no_source_neighbors` nearest neighbors
-    src_landmark_RBF_neighbors = np.argsort(-src_landmark_RBF, axis = 1)[:no_source_neighbors]
+    src_landmark_RBF_neighbors = np.argsort(-src_landmark_RBF, axis = 1)[: , :no_source_neighbors]
 
     """
     Here the munk algorithm does not imply the actual munk algorithm. Just an algorithm that finds the closest source neighbors
