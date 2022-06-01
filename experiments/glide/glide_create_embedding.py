@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.append(os.getcwd())
 sys.path.append(f"{os.getcwd()}/src")
-from gmundo.prediction.predict import mundo_predict
+# from gmundo.prediction.predict import mundo_predict
 from gmundo.prediction.scoring import kfoldcv, kfoldcv_with_pr
 from glide_utils import get_go_lab, get_prot_go_dict, get_go_lab_src
 import json
@@ -68,6 +68,70 @@ def compute_DSD_RBF(network_file,
     R =  rbf_kernel(squareform(pdist(X_i)), gamma = 0.1)
     np.save(save_loc, R)
     return R, nodemap
+
+
+
+def mundo_predict(target_map: Dict[int, List[int]],
+                  munk_map: Dict[int, List[int]],
+                  n_neighbors: int,
+                  target_go_dict: Dict[int, str],
+                  source_go_dict: Dict[int, str],
+                  munk_weight: float = 0.25,
+                  split_source_target = True,
+                  n_neighbors_munk:int = 0) -> Dict[str, List[Tuple[str, float]]]:
+    """
+    Performs prediction on the target network,
+    Parameters:
+        target_map      - Dict[protein(target), [protein(target)]] which is sorted protein neighbors by their similarity for the target species(lower index in the list means the protein is more similar)
+        MUNK_map        - Dict[protein(target), [protein(source)]] where the protein in this case is from the source species.
+        n_neighbors     - integer values. No of neighbors for source plus target.
+        target_go_f     - both functions that takes target protein and returns the GO labels associated with it.
+        source_go_f     - both functions that takes source protein and returns the GO labels associated with it.
+        MUNK_weight     - weight to use for MUNK votes.
+        split_source_target - a boolean variable to check if we want to use earlier version of MUNDO, where the source and target neighbors are not chosen from the `n_neighbors`
+        n_neighbors_munk - only selected when `split_source_target` is false.
+    Returns:
+        Dictionary containing mapping from target proteins to the sorted (in descending order) list of associated labels and their confidence values
+    """
+
+    def vote(target_voters: List[int], munk_voters: List[int]) -> List[Tuple[str, float]]:
+        """
+        Returns a list of (GO, confidence value) tuples
+        """
+        go_map = {}
+        
+        # Work on target 
+        for v in target_voters:
+            go_labels = target_go_dict[v] if v in target_go_dict else []
+            for g in go_labels:
+                go_map[g] = 1.0 if g not in go_map else go_map[g] + 1.0
+        
+        # Work on source
+        for v in munk_voters:
+            go_labels = source_go_dict[v] if v in source_go_dict else []
+            for g in go_labels:
+                go_map[g] = munk_weight if g not in go_map else go_map[g] + munk_weight
+
+        return sorted(go_map.items(), reverse=True, key=lambda k: k[1])  # [(go_label, vote), ... ] format, vote is float
+
+    proteins = {}
+    if type(target_map) is dict:
+        proteins = target_map.keys()
+    elif type(target_map) is np.ndarray:
+        proteins = range(target_map.shape[0])
+
+    protein_labels = {}
+    for p in proteins:
+        if split_source_target:
+            n_target_neighbors, n_munk_neighbors = get_neighbors_split(p, target_map, n_neighbors, target_go_dict)
+        else:
+            n_target_neighbors, n_munk_neighbors = n_neighbors, n_neighbors_munk
+        target_voters = target_map[p][:n_target_neighbors]
+        munk_voters = munk_map[p][:n_munk_neighbors] if munk_weight != 0.0 else []
+        
+        protein_labels[p] = vote(target_voters, munk_voters)
+
+    return protein_labels
 
 
 def construct_predictor_mundo(target_neighbors, munk_neighbors, source_prot_go, n_neighbors=20, alpha = 0.25, n_neighbors_munk = 10):
@@ -214,7 +278,7 @@ def main(args):
     
     
     # Get neighbors
-    tar_neighbors = np.argsort(-source_R, axis = 1)[:, :args.target_neighbors]
+    tar_neighbors = np.argsort(-target_R, axis = 1)[:, :args.target_neighbors]
     munk_neighbors = target_source_neighbor(args.network_source, 
                         args.network_target, 
                         landmark_file, # Use it to map target landmarks to source
