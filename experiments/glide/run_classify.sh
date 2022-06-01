@@ -10,7 +10,7 @@ SBATCH_OPTS="\
 
 INPUT_FOLDER=net
 GO_FOLDER=go
-OP_BASE=output_dir
+OP_BASE=output_folder
 # DEFAULTS
 SOURCE=bakers_yeast_biogrid
 DEST=fission_yeast_biogrid
