@@ -109,7 +109,7 @@ def target_source_neighbor(source_name,
     tar_src_ent = {k:i for k, i in land_df[[target_name, source_name]].values} # target symbol landmarks -> source symbol landmarks
 
     # Get all the indices of the target landmarks
-    target_ids = [target_map[k] for k in target_src_ent.keys()] # id in target space
+    target_ids = [target_map[k] for k in tar_src_ent.keys()] # id in target space
     target_RBF_land = target_RBF[:, target_ids] 
 
     # Get the closest target landmark 
