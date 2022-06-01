@@ -71,14 +71,14 @@ def compute_DSD_RBF(network_file,
 
 
 
-def mundo_predict(target_map: Dict[int, List[int]],
-                  munk_map: Dict[int, List[int]],
-                  n_neighbors: int,
-                  target_go_dict: Dict[int, str],
-                  source_go_dict: Dict[int, str],
-                  munk_weight: float = 0.25,
+def mundo_predict(target_map,
+                  munk_map,
+                  n_neighbors,
+                  target_go_dict,
+                  source_go_dict,
+                  munk_weight = 0.25,
                   split_source_target = True,
-                  n_neighbors_munk:int = 0) -> Dict[str, List[Tuple[str, float]]]:
+                  n_neighbors_munk = 0):
     """
     Performs prediction on the target network,
     Parameters:
