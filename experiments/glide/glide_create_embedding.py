@@ -77,7 +77,7 @@ def mundo_predict(target_map,
                   target_go_dict,
                   source_go_dict,
                   munk_weight = 0.25,
-                  split_source_target = True,
+                  split_source_target = False,
                   n_neighbors_munk = 0):
     """
     Performs prediction on the target network,
