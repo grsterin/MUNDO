@@ -206,12 +206,12 @@ def main(args):
                                                set(tar_labels),
                                                src_nlist)
     
-    src_prot_go = get_prot_go_dict(src_go_prots_dict, src_dsd_map)
-    tar_prot_go = get_prot_go_dict(tar_go_prots_dict, tar_dsd_map)
+    src_prot_go = get_prot_go_dict(src_go_prots_dict, s_nodemap)
+    tar_prot_go = get_prot_go_dict(tar_go_prots_dict, t_nodemap)
     
     
     # Get neighbors
-    tar_neighbors = np.argsort(-source_R, axis = 1)[:, :args.n_neighbors]
+    tar_neighbors = np.argsort(-source_R, axis = 1)[:, :args.target_neighbors]
     munk_neighbors = target_source_neighbor(args.network_source, 
                         args.network_target, 
                         landmark_file, # Use it to map target landmarks to source
