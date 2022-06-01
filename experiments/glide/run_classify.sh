@@ -60,7 +60,7 @@ done
 echo "UNIMUNDO Parameters: "
 echo "    SOURCE=${SOURCE}, DEST=${DEST}"
 LANDMARK_FILE=${DEST}-${SOURCE}-${MAPPING}.tsv
-
+echo " LANDMARK FILE: ${LANDMARK_FILE}"
 OUTPUT_FLD=${OP_BASE}/${SOURCE}-${DEST}
 OUTPUT_LOGS=${OP_BASE}/logs
 
