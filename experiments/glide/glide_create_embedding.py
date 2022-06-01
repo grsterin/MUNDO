@@ -94,7 +94,7 @@ def mundo_predict(target_map,
         Dictionary containing mapping from target proteins to the sorted (in descending order) list of associated labels and their confidence values
     """
 
-    def vote(target_voters: List[int], munk_voters: List[int]) -> List[Tuple[str, float]]:
+    def vote(target_voters, munk_voters):
         """
         Returns a list of (GO, confidence value) tuples
         """
