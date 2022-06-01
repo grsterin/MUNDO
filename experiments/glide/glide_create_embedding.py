@@ -5,7 +5,7 @@ sys.path.append(os.getcwd())
 sys.path.append(f"{os.getcwd()}/src")
 from gmundo.prediction.predict import mundo_predict
 from gmundo.prediction.scoring import kfoldcv, kfoldcv_with_pr
-from glide_utils import get_go_lab, get_prot_go_dict
+from glide_utils import get_go_lab, get_prot_go_dict, get_go_lab_src
 import json
 import argparse
 import numpy as np
@@ -140,6 +140,8 @@ We are assuming the networks are always represented using the ENTREZ protein ids
 
 python glide_create_embedding_and_classify.py --input_folder net --go_folder go --output_folder . --network_source bakers_yeast_biogrid --network_target fission_yeast_biogrid --landmark_file fission-yeast-bakers-yeast-with-blast.alignment.tsv 
 --landmark_no 100 
+fission-org-id = 4896
+bakers-org-id = 559292
 """
 def parse_args():
     parser = argparse.ArgumentParser()
