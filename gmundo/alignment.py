@@ -5,8 +5,12 @@ import subprocess
 from tqdm import tqdm
 import pathlib
 import os
+import time
 
 ################### ISORANK CODE #############################
+def ip():
+    pass
+
 def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations = 5, saveto = None, rowname = "source", colname = "target"):
     """
     Compute the ISORANK matches from G1 and G2, two networkx graphs. These graphs are labeled
@@ -19,11 +23,16 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
     
     E : numpy matrix {m x n}, sequence similarity score
     """
-
+    
+    # main timee
+    total_time = time.perf_counter()
+    # time of a particular code 
+    check_time = 0
+    
     i_row_map  = {value: key for key, value in row_map.items()}
     i_col_map  = {value: key for key, value in col_map.items()}
     
-
+    
     def _isorank_mult_R_A_ij(i, j, R):
         """
         Suffix ending with _ imply that the variable is made up of true label name.
@@ -32,18 +41,34 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
         A  = np.zeros((m, n))
         i_ = i_row_map[i]
         j_ = i_col_map[j]
+        
+        nonlocal check_time
+        
         i_neighbors_ = G1.neighbors(i_)
         j_neighbors_ = G2.neighbors(j_)
         
         i_neighbors  = [row_map[i_n_] for i_n_ in i_neighbors_]
         j_neighbors  = [col_map[j_n_] for j_n_ in j_neighbors_]
 
+        # <<<<<<<<<
+        int_time     = time.perf_counter()
+        
         A_ij_local   = np.zeros((len(i_neighbors), len(j_neighbors)))
         for id_i, ni in enumerate(i_neighbors):
             for id_j, nj in enumerate(j_neighbors):
                 A_ij_local[id_i, id_j] = 1. / (len(G1[i_row_map[ni]]) * len(G2[i_col_map[nj]]))
+                
+        int_time     = time.perf_counter() - int_time
+        check_time  += int_time
+        # >>>>>>>>>>>>
+        
+        
         R_local      = R[np.ix_(i_neighbors, j_neighbors)]
-        return np.sum(R_local * A_ij_local)
+        r_sum = np.sum(R_local * A_ij_local)
+        
+
+        return r_sum 
+    
     
     def _isorank_compute_next_r(R, E = None, alpha = 1):
         """
@@ -95,6 +120,7 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
     # Normalize
     R      = R / norm(R)
     
+    additional_info = {}
     errors = []
     
     # Compute Isorank matrix
@@ -114,8 +140,12 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
             mappings   = pd.DataFrame(best_pairs, columns = [rowname, colname, "weight"])
             mappings.to_csv(f"IT-{i}-{saveto}", index = None, sep = "\t")
         
-    # The output is going to be the best pairings from 
-    return best_pairs, R, errors
+    # The output is going to be the best pairings from
+    total_time                = time.perf_counter() - total_time
+    additional_info["errors"] = errors
+    additional_info["checked/total"] = check_time / total_time
+    additional_info["total"] = total_time
+    return best_pairs, R, additional_info
 
 
 def hubalign(smaller_network_file_name: str,
