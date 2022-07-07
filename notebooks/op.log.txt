@@ -1,0 +1,2 @@
+[!] Number of available cpus: 16
+slurmstepd: error: *** JOB 19719007 ON i2cmp001 CANCELLED AT 2022-07-06T23:00:33 DUE TO TIME LIMIT ***

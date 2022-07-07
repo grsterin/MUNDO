@@ -1,10 +1,13 @@
+#!/cluster/tufts/cowenlab/.envs/denoise/bin/python
 import subprocess
+import multiprocessing as mp
 from multiprocessing import Pool
 import sys
 import os
 import time
 import shlex
 import argparse
+import pandas as pd
 
 """
     Used to store the async output
@@ -57,6 +60,7 @@ def main(args):
     """
         Main process
     """
+    print(f"[!] Number of available cpus: {mp.cpu_count()}")
     def log(strng):
         if args.verbose:
             print(strng)
@@ -84,8 +88,7 @@ def main(args):
                                args.source_fasta,
                                args.out_reverse,
                               6), callback = r2.update)
-    print("Waiting for Reciprocal Blast to complete...")
-    
+   
     procs = []
     try:
         procs.append(p1)
@@ -97,14 +100,16 @@ def main(args):
     except NameError:
         pass
     
-    
+    print("Waiting for Reciprocal Blast to complete...")
+    print(f"Running BLAST procs: {len(procs)}")
     # Catch exceptions
     while True:
-        # Catch exceptions in results not ready
+       # Catch exceptions in results not ready
         try:
-            ready = [p.ready() for p in procs]
-            successful = [p.successful() for p in procs]
+            ready = ((not rp1) or (rp1 and p1.ready())) or ((not rp2) or (rp2 and p2.ready()))
+            successful = ((not rp1) or (rp1 and p1.successful())) or ((not rp2) or (rp2 and p2.successful()))
             print(successful)
+            print("Here")
             print(ready)
         except Exception:
             continue
