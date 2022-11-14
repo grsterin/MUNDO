@@ -147,6 +147,30 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
     additional_info["total"] = total_time
     return best_pairs, R, additional_info
 
+def isorank_optimized(R1, R2, E, alpha):
+    """
+    Optimized version of ISORANK from Xiaozhe's code
+    """
+    def compute_A_R():
+        """
+        Xiaozhe's code here
+        """
+        pass
+    
+    d1 = np.sum(R1, axis = 1)
+    d2 = np.sum(R2, axis = 1)
+    
+    SSD = np.outer(d1.astype(float), d2.astype(float))
+    SSD /= np.sum(SSD)
+    
+    E /= np.sum(E)
+    """
+    R = AR (p1 x p2) D1e x D2e
+    R = \alphaAR + \beta E
+    R_{t+1} = \alpha AR_{t} + \beta E
+    """
+    R_est = (1-alpha) *SSD + alpha * E
+    return R_est
 
 def hubalign(smaller_network_file_name: str,
              bigger_network_file_name: str,
