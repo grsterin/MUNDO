@@ -147,6 +147,8 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
     additional_info["total"] = total_time
     return best_pairs, R, additional_info
 
+####################################### OPTIMIZED version of the code #########################################
+
 def isorank_optimized(R1, R2, E, alpha):
     """
     Optimized version of ISORANK from Xiaozhe's code
@@ -171,6 +173,45 @@ def isorank_optimized(R1, R2, E, alpha):
     """
     R_est = (1-alpha) *SSD + alpha * E
     return R_est
+
+def preprocess_R_mat(R):
+    """
+        Apply preprocessing on R before performing greedy match
+    """
+    def apply_axis(v):
+        n = v.shape[0]
+        p  = np.argsort(-v)        
+        #map positions
+        w     = np.zeros((n,))
+        for i in range(n):
+            curr = v[p[i]]
+            next = v[p[i+1]] if i + 1 < n else 0
+            w[i] = np.sqrt(curr * (curr - next) / (curr + next)) if curr + next > 0 else 0
+        return w
+    R1 = np.apply_along_axis(apply_axis, 0, R.copy())
+    R2 = np.apply_along_axis(apply_axis, 1, R.copy())
+    return R1 * R2
+
+def compute_greedy_assignment(R, n_align, process_R = lambda x:x):
+    """
+        Here, R represents the m x n matrix, and n_align, the number of one to one alignment from R.
+        Assignment is greedy
+    """
+    aligned = []
+    R1      = process_R(R.copy())
+    n_align = min(n_align, *R1.shape)
+    while(len(aligned) < n_align):
+        maxcols = np.argmax(R1, axis = 1) # best y ids 
+        maxid   = np.argmax(np.max(R1, axis = 1)) # best x id
+        maxcol  = maxcols[maxid]
+        aligned.append((maxid, maxcol))
+        R1[:, maxcol] = -1
+        R1[maxid, :]  = -1
+    return aligned
+        
+
+################################################################################################################################
+
 
 def hubalign(smaller_network_file_name: str,
              bigger_network_file_name: str,
