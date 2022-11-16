@@ -149,18 +149,40 @@ def isorank(G1, G2, row_map, col_map, alpha, matches = 100, E = None, iterations
 
 ####################################### OPTIMIZED version of the code #########################################
 
-def isorank_optimized(R1, R2, E, alpha):
+def isorank_optimized(R1, R2, E, alpha, epoch = 1):
     """
     Optimized version of ISORANK from Xiaozhe's code
     """
-    def compute_A_R():
-        """
-        Xiaozhe's code here
-        """
-        pass
-    
     d1 = np.sum(R1, axis = 1)
     d2 = np.sum(R2, axis = 1)
+    
+    if epoch > 1:
+        P1 = R1 / d1
+        P2 = R2 / d2
+    
+    def update_R_kron(R, P1, P2):
+        """
+        Xiaozhe's code here for update
+        """        
+        # get size
+        m, _ = P1.shape
+        n, _ = P2.shape
+        
+        # reshape R: mxn -> nxm
+        #R = np.reshape(R, m*n, order='F')
+        R = np.reshape(R, (n,m), order='F')
+            
+        # update R
+        R = np.matmul(np.matmul(P2, R), P1.T)
+        
+        # reshape R: nxm -> mxn
+        #R = np.reshape(R, m*n, order='F')
+        R = np.reshape(R, (m,n), order='F')
+        
+        if E is not None:
+            R = (1 - alpha) * R + alpha * E
+        
+        return R
     
     SSD = np.outer(d1.astype(float), d2.astype(float))
     SSD /= np.sum(SSD)
@@ -172,7 +194,14 @@ def isorank_optimized(R1, R2, E, alpha):
     R_{t+1} = \alpha AR_{t} + \beta E
     """
     R_est = (1-alpha) *SSD + alpha * E
+    
+    # As we increase the epoch:
+    for i in range(epoch - 1):
+        R_est = update_R_kron(R_est, P1, P2)
+
     return R_est
+
+
 
 def preprocess_R_mat(R):
     """
