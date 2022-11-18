@@ -59,7 +59,7 @@ def read_biogrid_ids_list_from_biogrid_file(db_file: str, organism_name: str) ->
 
 def write_network_to_tsv(graph: nx.Graph, file_path: str):
     pd_edgelist: pd.DataFrame = nx.to_pandas_edgelist(graph)
-    pd_edgelist.to_csv(file_path, sep="\t", header=False)
+    pd_edgelist.to_csv(file_path, sep="\t", header=False, index=False)
 
 
 def read_network_from_tsv(tsv_file: str) -> nx.Graph:
