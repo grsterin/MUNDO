@@ -18,7 +18,7 @@ def parse_args():
     parser.add_argument("--working_folder", help="Current working folder.")
     parser.add_argument("--src_biogrid_file", help="Biogrid file with interactions for source organism")
     parser.add_argument("--tgt_biogrid_file", help="Biogrid file with interactions for target organism")
-    parser.add_argument("--sc_organism_name", help="Source organism name, e.g. 'Homo sapiens'")
+    parser.add_argument("--src_organism_name", help="Source organism name, e.g. 'Homo sapiens'")
     parser.add_argument("--tgt_organism_name", help="Target organism name, e.g. 'Mus musculus'")
     parser.add_argument("--src_simple_organism_name", help="Simple source organism name, e.g. 'human'")
     parser.add_argument("--tgt_simple_organism_name", help="Simple target organism name, e.g. 'mouse'")
