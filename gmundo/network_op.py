@@ -1,13 +1,14 @@
 import json
-from typing import List
+from typing import List, Dict, Tuple
 from urllib import request, parse
 
 import networkx as nx
 import pandas as pd
 
 
-def read_network_from_biogrid_file(db_file: str, organism_name: str) -> nx.Graph:
+def read_network_from_biogrid_file(db_file: str, organism_name: str) -> Tuple[nx.Graph, Dict[int, int]]:
     edgeset = set()
+    biogrid_to_entrez_dict = dict()
     with open(db_file, 'r') as fptr:
         next(fptr)  # skip format description line
         for line in fptr.readlines():
@@ -17,15 +18,22 @@ def read_network_from_biogrid_file(db_file: str, organism_name: str) -> nx.Graph
             if organism1 != organism2 or organism1.lower() != organism_name.lower():
                 continue  # skip interactions with other organisms
             # read entrezgene ids
-            src = int(interaction[1])
-            dst = int(interaction[2])
-            if src == dst:
-                continue  # ignore self-loops
-            edgeset.add((src, dst))
+            src_entrez = int(interaction[1])
+            dst_entrez = int(interaction[2])
 
+            src_biogr = int(interaction[3])
+            dst_biogr = int(interaction[4])
+
+            if src_biogr == dst_biogr:
+                continue  # ignore self-loops
+
+            edgeset.add((src_biogr, dst_biogr))
+            biogrid_to_entrez_dict[src_biogr] = src_entrez
+            biogrid_to_entrez_dict[dst_biogr] = dst_entrez
     G = nx.Graph()
     G.add_edges_from(edgeset)
-    return G.subgraph(max(nx.connected_components(G), key=len))
+
+    return G.subgraph(max(nx.connected_components(G), key=len)), biogrid_to_entrez_dict
 
 
 def read_biogrid_ids_list_from_biogrid_file(db_file: str, organism_name: str) -> List[str]:
@@ -47,6 +55,11 @@ def read_biogrid_ids_list_from_biogrid_file(db_file: str, organism_name: str) ->
     G = nx.Graph()
     G.add_edges_from(edgeset)
     return list(G.nodes)
+
+
+def write_network_to_tsv(graph: nx.Graph, file_path: str):
+    pd_edgelist: pd.DataFrame = nx.to_pandas_edgelist(graph)
+    pd_edgelist.to_csv(file_path, sep="\t", header=False)
 
 
 def read_network_from_tsv(tsv_file: str) -> nx.Graph:
